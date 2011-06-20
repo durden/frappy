@@ -58,11 +58,11 @@ class APICall(object):
     and provide a basic __init__ method.
     """
 
-    def __init__(
+    def __init__(self, auth, format, domain, callable_cls, uri="",
+                 uriparts=None, secure=True):
+
         """Initialize call API object"""
 
-        self, auth, format, domain, callable_cls, uri="",
-        uriparts=None, secure=True):
         self.auth = auth
         self.format = format
         self.domain = domain
