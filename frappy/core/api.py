@@ -1,3 +1,8 @@
+"""
+Base implementation of Frappy framework.
+"""
+
+
 try:
     import urllib.request as urllib_request
     import urllib.error as urllib_error
@@ -16,20 +21,27 @@ class APIError(Exception):
     Base Exception thrown by the APICall object when there is a
     general error interacting with the API.
     """
+
     pass
+
 
 class APIHTTPError(APIError):
     """
     Base Exception thrown by the APICall object when there is a
     general error interacting with the API.
     """
+
     def __init__(self, e, uri, format, uriparts):
+        """Initalize error object"""
+
         self.e = e
         self.uri = uri
         self.format = format
         self.uriparts = uriparts
 
     def __str__(self):
+        """Stringify error"""
+
         return (
             "API sent status %i for URL: %s.%s using parameters: "
             "(%s)\ndetails: %s" % (
@@ -38,8 +50,17 @@ class APIHTTPError(APIError):
 
 
 class APICall(object):
+    """
+    Base implementation of API call.
+
+    This class is very generic and should provide most of the send/retrieve
+    functionality for API access.  Thus, you should be able to subclass it,
+    and provide a basic __init__ method.
+    """
 
     def __init__(
+        """Initialize call API object"""
+
         self, auth, format, domain, callable_cls, uri="",
         uriparts=None, secure=True):
         self.auth = auth
@@ -51,24 +72,41 @@ class APICall(object):
         self.secure = secure
 
     def __getattr__(self, k):
+        """
+        Look for attribute k in locations other than standard object hierarchy
+        """
+
         try:
             return object.__getattr__(self, k)
         except AttributeError:
+            # If attribute is not found, just return an instance of the
+            # callable class with the missing attribute appended to the uri
+
+            # This is allows for a very powerful and expressive syntax for
+            # creating API calls that map closely to the uri they query.
+            # For example a Twitter call: <object>.statuses.public_timeline()
+            # will map to <domain>/statuses/public_timeline
             return self.callable_cls(
                 auth=self.auth, format=self.format, domain=self.domain,
                 callable_cls=self.callable_cls, uriparts=self.uriparts + (k,),
                 secure=self.secure)
 
     def __call__(self, **kwargs):
-        # Build the uri.
+        """
+        Build uri based on existing parts and remaining key word arguments
+        """
+
         uriparts = []
         for uripart in self.uriparts:
             # If this part matches a keyword argument, use the
             # supplied value otherwise, just use the part.
             uriparts.append(str(kwargs.pop(uripart, uripart)))
+
         uri = '/'.join(uriparts)
 
         method = "GET"
+
+        # FIXME
         #for action in POST_ACTIONS:
             #if uri.endswith(action):
                 #method = "POST"
@@ -78,21 +116,25 @@ class APICall(object):
         # the list of uriparts, assume the id goes at the end.
         id = kwargs.pop('id', None)
         if id:
-            uri += "/%s" %(id)
+            uri += "/%s" % (id)
 
         secure_str = ''
         if self.secure:
             secure_str = 's'
+
         dot = ""
         if self.format:
             dot = "."
-        uriBase = "http%s://%s/%s%s%s" %(
+
+        uriBase = "http%s://%s/%s%s%s" % (
                     secure_str, self.domain, uri, dot, self.format)
 
         headers = {}
+
         if self.auth:
             headers.update(self.auth.generate_headers())
             arg_data = self.auth.encode_params(uriBase, method, kwargs)
+
             if method == 'GET':
                 uriBase += '?' + arg_data
                 body = None
@@ -103,6 +145,8 @@ class APICall(object):
         return self._handle_response(req, uri, arg_data)
 
     def _handle_response(self, req, uri, arg_data):
+        """Verify response code and format data accordingly"""
+
         try:
             handle = urllib_request.urlopen(req)
             if "json" == self.format:
