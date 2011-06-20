@@ -166,9 +166,9 @@ class Twitter(APICall):
         if api_version:
             uriparts += (str(api_version),)
 
-        TwitterCall.__init__(
+        APICall.__init__(
             self, auth=auth, format=format, domain=domain,
-            callable_cls=TwitterCall,
+            callable_cls=APICall,
             secure=secure, uriparts=uriparts)
 
 

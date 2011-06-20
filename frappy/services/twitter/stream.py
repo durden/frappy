@@ -7,7 +7,8 @@ except ImportError:
     import urllib2 as urllib_error
 import json
 
-from .api import TwitterCall, wrap_response
+from frappy.core.api import APICall
+from twitter import wrap_response
 
 class TwitterJSONIter(object):
 
@@ -29,7 +30,7 @@ class TwitterJSONIter(object):
             except urllib_error.HTTPError as e:
                 raise TwitterHTTPError(e, uri, self.format, arg_data)
 
-class TwitterStreamCall(TwitterCall):
+class TwitterStreamCall(APICall):
     def _handle_response(self, req, uri, arg_data):
         handle = urllib_request.urlopen(req,)
         return iter(TwitterJSONIter(handle, uri, arg_data))
