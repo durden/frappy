@@ -1,31 +1,10 @@
 
+from frappy.core.api import APICall
+from frappy.core.auth import NoAuth
+
+
 class _DEFAULT(object):
     pass
-
-class TwitterError(Exception):
-    """
-    Base Exception thrown by the Twitter object when there is a
-    general error interacting with the API.
-    """
-    pass
-
-class TwitterHTTPError(TwitterError):
-    """
-    Exception thrown by the Twitter object when there is an
-    HTTP error interacting with twitter.com.
-    """
-    def __init__(self, e, uri, format, uriparts):
-        self.e = e
-        self.uri = uri
-        self.format = format
-        self.uriparts = uriparts
-
-    def __str__(self):
-        return (
-            "Twitter sent status %i for URL: %s.%s using parameters: "
-            "(%s)\ndetails: %s" %(
-                self.e.code, self.uri, self.format, self.uriparts,
-                self.e.fp.read()))
 
 
 class TwitterResponse(object):
@@ -73,7 +52,7 @@ def wrap_response(response, headers):
     return WrappedTwitterResponse(response)
 
 
-class Twitter(TwitterCall):
+class Twitter(APICall):
     """
     The minimalist yet fully featured Twitter API class.
 
@@ -193,4 +172,4 @@ class Twitter(TwitterCall):
             secure=secure, uriparts=uriparts)
 
 
-__all__ = ["Twitter", "TwitterError", "TwitterHTTPError", "TwitterResponse"]
+__all__ = ["Twitter", "TwitterResponse"]
