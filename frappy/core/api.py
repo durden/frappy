@@ -5,8 +5,6 @@ except ImportError:
     import urllib2 as urllib_request
     import urllib2 as urllib_error
 
-from .auth import NoAuth
-
 try:
     import json
 except ImportError:
