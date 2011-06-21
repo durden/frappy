@@ -84,11 +84,13 @@ except ImportError:
 import webbrowser
 
 from .twitter import Twitter
+from .oauth_dance import oauth_dance
+
 from frappy.core.api import APIError
 from frappy.core.oauth import OAuth, write_token_file, read_token_file
-from frappy.core.oauth_dance import oauth_dance
 from frappy.core import ansi
 from frappy.core.util import smrt_input, printNicely
+
 
 OPTIONS = {
     'action': 'friends',
