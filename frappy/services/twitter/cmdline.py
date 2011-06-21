@@ -83,11 +83,12 @@ except ImportError:
     from urllib2 import quote
 import webbrowser
 
-from .api import Twitter, TwitterError
-from .oauth import OAuth, write_token_file, read_token_file
-from .oauth_dance import oauth_dance
-from . import ansi
-from .util import smrt_input, printNicely
+from .twitter import Twitter
+from frappy.core.api import APIError
+from frappy.core.oauth import OAuth, write_token_file, read_token_file
+from frappy.core.oauth_dance import oauth_dance
+from frappy.core import ansi
+from frappy.core.util import smrt_input, printNicely
 
 OPTIONS = {
     'action': 'friends',
@@ -300,12 +301,12 @@ formatters['lists'] = lists_formatters
 def get_formatter(action_type, options):
     formatters_dict = formatters.get(action_type)
     if (not formatters_dict):
-        raise TwitterError(
+        raise APIError(
             "There was an error finding a class of formatters for your type (%s)"
             %(action_type))
     f = formatters_dict.get(options['format'])
     if (not f):
-        raise TwitterError(
+        raise APIError(
             "Unknown formatter '%s' for status actions" %(options['format']))
     return f()
 
@@ -391,11 +392,11 @@ class SearchAction(Action):
 class AdminAction(Action):
     def __call__(self, twitter, options):
         if not (options['extra_args'] and options['extra_args'][0]):
-            raise TwitterError("You need to specify a user (screen name)")
+            raise APIError("You need to specify a user (screen name)")
         af = get_formatter('admin', options)
         try:
             user = self.getUser(twitter, options['extra_args'][0])
-        except TwitterError as e:
+        except APIError as e:
             print("There was a problem following or leaving the specified user.")
             print("You may be trying to follow a user you are already following;")
             print("Leaving a user you are not currently following;")
@@ -409,7 +410,7 @@ class AdminAction(Action):
 class ListsAction(StatusAction):
     def getStatuses(self, twitter, options):
         if not options['extra_args']:
-            raise TwitterError("Please provide a user to query for lists")
+            raise APIError("Please provide a user to query for lists")
 
         screen_name = options['extra_args'][0]
 
@@ -598,7 +599,7 @@ def main(args=sys.argv[1:]):
     except NoSuchActionError as e:
         print(e, file=sys.stderr)
         raise SystemExit(1)
-    except TwitterError as e:
+    except APIError as e:
         print(str(e), file=sys.stderr)
         print("Use 'twitter -h' for help.", file=sys.stderr)
         raise SystemExit(1)
