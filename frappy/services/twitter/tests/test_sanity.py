@@ -1,8 +1,11 @@
 
 from random import choice
 
-from twitter import Twitter, NoAuth, OAuth, read_token_file
-from twitter.cmdline import CONSUMER_KEY, CONSUMER_SECRET
+from frappy.services.twitter.twitter import Twitter
+from frappy.services.twitter.cmdline import CONSUMER_KEY, CONSUMER_SECRET
+
+from frappy.core.auth import NoAuth
+from frappy.core.oauth import OAuth, read_token_file
 
 noauth = NoAuth()
 oauth = OAuth(*read_token_file('tests/oauth_creds')
