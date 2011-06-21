@@ -4,8 +4,8 @@ from __future__ import print_function
 import webbrowser
 import time
 
-from .api import Twitter
-from .oauth import OAuth, write_token_file
+from frappy.services.twitter.twitter import Twitter
+from frappy.core.oauth import OAuth, write_token_file
 
 try:
     _input = raw_input

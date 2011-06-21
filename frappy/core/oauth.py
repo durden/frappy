@@ -1,6 +1,6 @@
 from __future__ import print_function
 
-from twitter.auth import Auth
+from frappy.core.auth import Auth
 
 from time import time
 from random import getrandbits
