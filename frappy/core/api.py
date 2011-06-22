@@ -131,6 +131,10 @@ class APICall(object):
         if self.format:
             dot = "."
 
+        # FIXME: Don't assume API uses .json or .xml format, maybe it always
+        # just returns the self.format
+        #uriBase = "http%s://%s/%s" % (secure_str, self.domain, uri)
+
         uriBase = "http%s://%s/%s%s%s" % (
                     secure_str, self.domain, uri, dot, self.format)
 
@@ -162,7 +166,7 @@ class APICall(object):
             else:
                 self.response = handle.read().decode('utf8')
 
-            return self.response
+            return self
         except urllib_error.HTTPError as e:
             if (e.code == 304):
                 return []
