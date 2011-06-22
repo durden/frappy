@@ -144,17 +144,22 @@ class APICall(object):
         req = urllib_request.Request(uriBase, body, headers)
         return self._handle_response(req, uri, arg_data)
 
+    def wrap_response(self, response, headers):
+        # FIXME: Explain
+        raise NotImplementedError()
+
     def _handle_response(self, req, uri, arg_data):
         """Verify response code and format data accordingly"""
 
         try:
             handle = urllib_request.urlopen(req)
             if "json" == self.format:
-                res = json.loads(handle.read().decode('utf8'))
-                return wrap_response(res, handle.headers)
+                return json.loads(handle.read().decode('utf8'))
+                #return self.wrap_response(res, handle.headers)
             else:
-                return wrap_response(
-                    handle.read().decode('utf8'), handle.headers)
+                return handle.read().decode('utf8'), handle.headers
+                #return self.wrap_response(
+                    #handle.read().decode('utf8'), handle.headers)
         except urllib_error.HTTPError as e:
             if (e.code == 304):
                 return []

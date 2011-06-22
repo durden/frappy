@@ -35,23 +35,6 @@ class TwitterResponse(object):
         return int(self.headers.getheader('X-RateLimit-Reset'))
 
 
-def wrap_response(response, headers):
-    response_typ = type(response)
-    if response_typ is bool:
-        # HURF DURF MY NAME IS PYTHON AND I CAN'T SUBCLASS bool.
-        response_typ = int
-
-    class WrappedTwitterResponse(response_typ, TwitterResponse):
-        __doc__ = TwitterResponse.__doc__
-
-        def __init__(self, response):
-            if response_typ is not int:
-                response_typ.__init__(self, response)
-            TwitterResponse.__init__(self, headers)
-
-    return WrappedTwitterResponse(response)
-
-
 class Twitter(APICall):
     """
     The minimalist yet fully featured Twitter API class.
@@ -171,5 +154,4 @@ class Twitter(APICall):
             callable_cls=APICall,
             secure=secure, uriparts=uriparts)
 
-
-__all__ = ["Twitter", "TwitterResponse"]
+__all__ = ["Twitter"]
