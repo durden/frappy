@@ -68,10 +68,13 @@ class APICall(object):
         self.domain = domain
         self.callable_cls = callable_cls
         self.uri = uri
-        self.uriparts = uriparts
         self.secure = secure
         self.response = None
         self.headers = None
+
+        self.uriparts = uriparts
+        if self.uriparts is None:
+            self.uriparts = ()
 
     def __getattr__(self, k):
         """
@@ -132,6 +135,8 @@ class APICall(object):
                     secure_str, self.domain, uri, dot, self.format)
 
         headers = {}
+        body = None
+        arg_data = ""
 
         if self.auth:
             headers.update(self.auth.generate_headers())
@@ -139,7 +144,6 @@ class APICall(object):
 
             if method == 'GET':
                 uriBase += '?' + arg_data
-                body = None
             else:
                 body = arg_data.encode('utf8')
 
