@@ -7,8 +7,8 @@ except ImportError:
     import urllib2 as urllib_error
 import json
 
-from frappy.core.api import APICall
-from twitter import wrap_response
+from frappy.core.api import APICall, APIHTTPError
+from twitter import Twitter
 
 class TwitterJSONIter(object):
 
@@ -16,6 +16,8 @@ class TwitterJSONIter(object):
         self.decoder = json.JSONDecoder()
         self.handle = handle
         self.buf = b""
+        self.uri = uri
+        self.arg_data = arg_data
 
     def __iter__(self):
         while True:
@@ -24,11 +26,11 @@ class TwitterJSONIter(object):
                 utf8_buf = self.buf.decode('utf8').lstrip()
                 res, ptr = self.decoder.raw_decode(utf8_buf)
                 self.buf = utf8_buf[ptr:].encode('utf8')
-                yield wrap_response(res, self.handle.headers)
+                yield Twitter.wrap_response(res, self.handle.headers)
             except ValueError as e:
                 continue
             except urllib_error.HTTPError as e:
-                raise TwitterHTTPError(e, uri, self.format, arg_data)
+                raise APIHTTPError(e, self.uri, self.format, self.arg_data)
 
 class TwitterStreamCall(APICall):
     def _handle_response(self, req, uri, arg_data):

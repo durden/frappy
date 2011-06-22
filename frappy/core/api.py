@@ -70,6 +70,8 @@ class APICall(object):
         self.uri = uri
         self.uriparts = uriparts
         self.secure = secure
+        self.response = None
+        self.headers = None
 
     def __getattr__(self, k):
         """
@@ -149,12 +151,14 @@ class APICall(object):
 
         try:
             handle = urllib_request.urlopen(req)
+            self.headers = handle.headers
+
             if "json" == self.format:
-                res = json.loads(handle.read().decode('utf8'))
-                return wrap_response(res, handle.headers)
+                self.response = json.loads(handle.read().decode('utf8'))
             else:
-                return wrap_response(
-                    handle.read().decode('utf8'), handle.headers)
+                self.response = handle.read().decode('utf8')
+
+            return self.response
         except urllib_error.HTTPError as e:
             if (e.code == 304):
                 return []
