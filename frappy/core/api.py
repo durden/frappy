@@ -58,8 +58,8 @@ class APICall(object):
     and provide a basic __init__ method.
     """
 
-    def __init__(self, auth, format, domain, callable_cls, uri="",
-                 uriparts=None, secure=True):
+    def __init__(self, auth, format, domain, callable_cls, uriparts=None,
+                 secure=True):
 
         """Initialize call API object"""
 
@@ -67,7 +67,7 @@ class APICall(object):
         self.format = format
         self.domain = domain
         self.callable_cls = callable_cls
-        self.uri = uri
+        self.uri = ""
         self.secure = secure
         self.response = None
         self.headers = None
@@ -107,7 +107,7 @@ class APICall(object):
             # supplied value otherwise, just use the part.
             uriparts.append(str(kwargs.pop(uripart, uripart)))
 
-        uri = '/'.join(uriparts)
+        self.uri += '/'.join(uriparts)
 
         method = "GET"
 
@@ -121,7 +121,7 @@ class APICall(object):
         # the list of uriparts, assume the id goes at the end.
         id = kwargs.pop('id', None)
         if id:
-            uri += "/%s" % (id)
+            self.uri += "/%s" % (id)
 
         secure_str = ''
         if self.secure:
@@ -133,10 +133,10 @@ class APICall(object):
 
         # FIXME: Don't assume API uses .json or .xml format, maybe it always
         # just returns the self.format
-        #uriBase = "http%s://%s/%s" % (secure_str, self.domain, uri)
+        #self.uri = "http%s://%s/%s" % (secure_str, self.domain, self.uri)
 
-        uriBase = "http%s://%s/%s%s%s" % (
-                    secure_str, self.domain, uri, dot, self.format)
+        self.uri = "http%s://%s/%s%s%s" % (
+                    secure_str, self.domain, self.uri, dot, self.format)
 
         headers = {}
         body = None
@@ -147,14 +147,14 @@ class APICall(object):
             arg_data = self.auth.encode_params(uriBase, method, kwargs)
 
             if method == 'GET':
-                uriBase += '?' + arg_data
+                self.uri += '?' + arg_data
             else:
                 body = arg_data.encode('utf8')
 
-        req = urllib_request.Request(uriBase, body, headers)
-        return self._handle_response(req, uri, arg_data)
+        req = urllib_request.Request(self.uri, body, headers)
+        return self._handle_response(req, arg_data)
 
-    def _handle_response(self, req, uri, arg_data):
+    def _handle_response(self, req, arg_data):
         """Verify response code and format data accordingly"""
 
         try:
@@ -171,4 +171,4 @@ class APICall(object):
             if (e.code == 304):
                 return []
             else:
-                raise APIHTTPError(e, uri, self.format, arg_data)
+                raise APIHTTPError(e, self.uri, self.format, arg_data)
