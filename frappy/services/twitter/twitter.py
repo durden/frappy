@@ -123,7 +123,6 @@ class Twitter(APICall):
 
         APICall.__init__(
             self, auth=auth, format=format, domain=domain,
-            callable_cls=APICall,
             secure=secure, uriparts=uriparts)
 
     @property

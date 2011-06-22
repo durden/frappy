@@ -58,7 +58,7 @@ class APICall(object):
     and provide a basic __init__ method.
     """
 
-    def __init__(self, auth, format, domain, callable_cls, uriparts=None,
+    def __init__(self, auth, format, domain, uriparts=None,
                  secure=True):
 
         """Initialize call API object"""
@@ -66,7 +66,6 @@ class APICall(object):
         self.auth = auth
         self.format = format
         self.domain = domain
-        self.callable_cls = callable_cls
         self.uri = ""
         self.secure = secure
         self.response = None
@@ -78,23 +77,19 @@ class APICall(object):
 
     def __getattr__(self, k):
         """
-        Look for attribute k in locations other than standard object hierarchy
+        Look for attribute k in base object, other wise append to uri
+
+        This is allows for a very powerful and expressive syntax for creating
+        API calls that map closely to the uri they query.  For example a
+        Twitter call: <object>.statuses.public_timeline() will map to
+        <domain>/statuses/public_timeline.
         """
 
         try:
             return object.__getattr__(self, k)
         except AttributeError:
-            # If attribute is not found, just return an instance of the
-            # callable class with the missing attribute appended to the uri
-
-            # This is allows for a very powerful and expressive syntax for
-            # creating API calls that map closely to the uri they query.
-            # For example a Twitter call: <object>.statuses.public_timeline()
-            # will map to <domain>/statuses/public_timeline
-            return self.callable_cls(
-                auth=self.auth, format=self.format, domain=self.domain,
-                callable_cls=self.callable_cls, uriparts=self.uriparts + (k,),
-                secure=self.secure)
+            self.uriparts += (k,)
+            return self
 
     def __call__(self, **kwargs):
         """
