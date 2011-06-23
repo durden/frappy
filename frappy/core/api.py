@@ -58,8 +58,8 @@ class APICall(object):
     and provide a basic __init__ method.
     """
 
-    def __init__(self, auth, format, domain, uriparts=None,
-                 secure=True):
+    def __init__(self, auth, format, domain, uriparts=None, secure=True,
+                 post_actions=None):
 
         """Initialize call API object"""
 
@@ -68,6 +68,10 @@ class APICall(object):
         self.domain = domain
         self.uri = ""
         self.secure = secure
+        self.post_actions = post_actions
+
+        if self.post_actions is None:
+            self.post_actions = []
 
         self.response = None
         self.request_headers = {}
@@ -117,21 +121,9 @@ class APICall(object):
 
         self.uri += '/'.join(uriparts)
 
+        # Don't use join here b/c not all arguments are required to be strings
         for arg in args:
-            arg_type = type(arg)
-            if arg_type is int:
-                self.uri += '/%d' % (arg)
-            elif arg_type is str:
-                self.uri += '/%s' % (arg)
-
-            else:
-                raise ValueError("Only int and str args supported")
-
-        # FIXME
-        #for action in POST_ACTIONS:
-            #if uri.endswith(action):
-                #self.method = "POST"
-                #break
+            self.uri += '/%s' % (arg)
 
         secure_str = ''
         if self.secure:
@@ -142,7 +134,13 @@ class APICall(object):
         # Wrapper for child classes to customize creation of the uri
         self.service_build_uri(**kwargs)
 
-        # Append any authentication specified to request
+        # method is GET by default
+        for action in self.post_actions:
+            if self.uri.find(action) > -1:
+                self.method = "POST"
+                break
+
+       # Append any authentication specified to request
         self._handle_auth(**kwargs)
 
     def _handle_auth(self, **kwargs):

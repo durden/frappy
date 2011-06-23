@@ -1,7 +1,7 @@
 
 from frappy.core.api import APICall
 from frappy.core.auth import NoAuth
-
+import twitter_globals
 
 class _DEFAULT(object):
     pass
@@ -123,7 +123,8 @@ class Twitter(APICall):
 
         APICall.__init__(
             self, auth=auth, format=format, domain=domain,
-            secure=secure, uriparts=uriparts)
+            secure=secure, uriparts=uriparts,
+            post_actions=twitter_globals.POST_ACTIONS)
 
     @property
     def rate_limit_remaining(self):
