@@ -97,6 +97,15 @@ class APICall(object):
             self.uriparts += (k,)
             return self
 
+    def service_build_uri(self, **kwargs):
+        """
+        Service specific build uri
+
+        This method is meant to be overriden by child classes to have the last
+        opportunity to verify self.uri and add additional elements to it, etc.
+        """
+        return
+
     def _build_uri(self, **kwargs):
         """Build up the final uri for the request"""
 
@@ -114,27 +123,14 @@ class APICall(object):
                 #self.method = "POST"
                 #break
 
-        # If an id kwarg is present and there is no id to fill in in
-        # the list of uriparts, assume the id goes at the end.
-        id = kwargs.pop('id', None)
-        if id:
-            self.uri += "/%s" % (id)
-
         secure_str = ''
         if self.secure:
             secure_str = 's'
 
-        dot = ""
-        if self.format:
-            dot = "."
+        self.uri = "http%s://%s/%s" % (secure_str, self.domain, self.uri)
 
-        # FIXME: Don't assume API uses .json or .xml format, maybe it always
-        # just returns the self.format
-        #self.uri = "http%s://%s/%s" % (secure_str, self.domain, self.uri)
-
-        self.uri = "http%s://%s/%s%s%s" % (
-                    secure_str, self.domain, self.uri, dot, self.format)
-
+        # Wrapper for child classes to customize creation of the uri
+        self.service_build_uri(**kwargs)
 
         # Append any authentication specified to request
         self._handle_auth(**kwargs)

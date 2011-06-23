@@ -139,4 +139,24 @@ class Twitter(APICall):
         """
         return int(self.headers.getheader('X-RateLimit-Reset'))
 
+    def service_build_uri(self, **kwargs):
+        """
+        Complete creation of request uri by adding additional Twitter specific
+        syntax, etc.
+        """
+
+        # If an id kwarg is present and there is no id to fill in in
+        # the list of uriparts, assume the id goes at the end.
+        id = kwargs.pop('id', None)
+        if id:
+            self.uri += "/%s" % (id)
+
+
+        # Twitter allows for specifying request format in uri
+        dot = ""
+        if self.format:
+            dot = "."
+
+        self.uri += "%s%s" % (dot, self.format)
+
 __all__ = ["Twitter"]
