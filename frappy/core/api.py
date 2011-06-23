@@ -106,7 +106,7 @@ class APICall(object):
         """
         return
 
-    def _build_uri(self, **kwargs):
+    def _build_uri(self, *args, **kwargs):
         """Build up the final uri for the request"""
 
         uriparts = []
@@ -116,6 +116,16 @@ class APICall(object):
             uriparts.append(str(kwargs.pop(uripart, uripart)))
 
         self.uri += '/'.join(uriparts)
+
+        for arg in args:
+            arg_type = type(arg)
+            if arg_type is int:
+                self.uri += '/%d' % (arg)
+            elif arg_type is str:
+                self.uri += '/%s' % (arg)
+
+            else:
+                raise ValueError("Only int and str args supported")
 
         # FIXME
         #for action in POST_ACTIONS:
@@ -151,13 +161,13 @@ class APICall(object):
             else:
                 self.body = self.arg_data.encode('utf8')
 
-    def __call__(self, **kwargs):
+    def __call__(self, *args, **kwargs):
         """
         Finish building uri with leftover arguments, append authentication, and
         send off request
         """
 
-        self._build_uri(**kwargs)
+        self._build_uri(*args, **kwargs)
 
         req = urllib_request.Request(self.uri, self.body, self.request_headers)
 
