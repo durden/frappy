@@ -6,7 +6,7 @@ Twitter-enabled applications.
 
 """
 
-from .twitter import Twitter, TwitterResponse
+from .twitter import Twitter
 from .stream import TwitterStream
 
 
@@ -25,11 +25,5 @@ The TwitterStream class
 __doc__ += TwitterStream.__doc__
 
 
-__doc__ += """
-Twitter Response Objects
-========================
-"""
-__doc__ += TwitterResponse.__doc__
 
-
-__all__ = ["Twitter", "TwitterStream", "TwitterResponse"]
+__all__ = ["Twitter", "TwitterStream"]
