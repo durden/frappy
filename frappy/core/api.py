@@ -68,8 +68,14 @@ class APICall(object):
         self.domain = domain
         self.uri = ""
         self.secure = secure
+
         self.response = None
-        self.headers = None
+        self.request_headers = {}
+        self.response_headers = None
+
+        self.method = "GET"
+        self.body = None
+        self.arg_data = ""
 
         self.uriparts = uriparts
         if self.uriparts is None:
@@ -91,10 +97,8 @@ class APICall(object):
             self.uriparts += (k,)
             return self
 
-    def __call__(self, **kwargs):
-        """
-        Build uri based on existing parts and remaining key word arguments
-        """
+    def _build_uri(self, **kwargs):
+        """Build up the final uri for the request"""
 
         uriparts = []
         for uripart in self.uriparts:
@@ -104,12 +108,10 @@ class APICall(object):
 
         self.uri += '/'.join(uriparts)
 
-        method = "GET"
-
         # FIXME
         #for action in POST_ACTIONS:
             #if uri.endswith(action):
-                #method = "POST"
+                #self.method = "POST"
                 #break
 
         # If an id kwarg is present and there is no id to fill in in
@@ -133,28 +135,44 @@ class APICall(object):
         self.uri = "http%s://%s/%s%s%s" % (
                     secure_str, self.domain, self.uri, dot, self.format)
 
-        headers = {}
-        body = None
-        arg_data = ""
+
+        # Append any authentication specified to request
+        self._handle_auth(**kwargs)
+
+    def _handle_auth(self, **kwargs):
+        """
+        Attach requested authentication to request and encoded body and
+        parameters
+        """
 
         if self.auth:
-            headers.update(self.auth.generate_headers())
-            arg_data = self.auth.encode_params(uriBase, method, kwargs)
+            self.request_headers.update(self.auth.generate_headers())
+            self.arg_data = self.auth.encode_params(self.uri, self.method,
+                                                    kwargs)
 
-            if method == 'GET':
-                self.uri += '?' + arg_data
+            if self.method == 'GET':
+                self.uri += '?' + self.arg_data
             else:
-                body = arg_data.encode('utf8')
+                self.body = self.arg_data.encode('utf8')
 
-        req = urllib_request.Request(self.uri, body, headers)
-        return self._handle_response(req, arg_data)
+    def __call__(self, **kwargs):
+        """
+        Finish building uri with leftover arguments, append authentication, and
+        send off request
+        """
+
+        self._build_uri(**kwargs)
+
+        req = urllib_request.Request(self.uri, self.body, self.request_headers)
+
+        return self._handle_response(req, self.arg_data)
 
     def _handle_response(self, req, arg_data):
         """Verify response code and format data accordingly"""
 
         try:
             handle = urllib_request.urlopen(req)
-            self.headers = handle.headers
+            self.response_headers = handle.headers
 
             if "json" == self.format:
                 self.response = json.loads(handle.read().decode('utf8'))
