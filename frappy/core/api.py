@@ -25,6 +25,18 @@ class APIError(Exception):
     pass
 
 
+# FIXME: Add some way to clear the uri to make a new call with the same object
+#        For example, the following does NOT work right now:
+#           api = APICall()
+#           api.status.abc()
+#           api.another_status.abc()
+#        This is b/c we are always appending missing attributes to the uri and
+#        therefore have no way of knowing we are starting a new request.  We
+#        could try to clear the uri out at the end of __call__, but then that
+#        won't allow users to check self.uri in tests, etc.
+#        You can work around this now by just creating a new object with:
+#           api = APICall()
+
 class APIHTTPError(APIError):
     """
     Base Exception thrown by the APICall object when there is a
