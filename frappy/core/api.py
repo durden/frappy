@@ -43,12 +43,12 @@ class APIHTTPError(APIError):
     general error interacting with the API.
     """
 
-    def __init__(self, e, uri, format, uriparts):
+    def __init__(self, e, uri, req_format, uriparts):
         """Initalize error object"""
 
         self.e = e
         self.uri = uri
-        self.format = format
+        self.req_format = req_format
         self.uriparts = uriparts
 
     def __str__(self):
@@ -57,7 +57,7 @@ class APIHTTPError(APIError):
         return (
             "API sent status %i for URL: %s.%s using parameters: "
             "(%s)\ndetails: %s" % (
-                self.e.code, self.uri, self.format, self.uriparts,
+                self.e.code, self.uri, self.req_format, self.uriparts,
                 self.e.fp.read()))
 
 
@@ -70,13 +70,13 @@ class APICall(object):
     and provide a basic __init__ method.
     """
 
-    def __init__(self, auth, format, domain, uriparts=None, secure=True,
+    def __init__(self, auth, req_format, domain, uriparts=None, secure=True,
                  post_actions=None, debug=False):
 
         """Initialize call API object"""
 
         self.auth = auth
-        self.format = format
+        self.req_format = req_format
         self.domain = domain
         self.uri = ""
         self.secure = secure
@@ -194,7 +194,7 @@ class APICall(object):
             handle = urllib_request.urlopen(req)
             self.response_headers = handle.headers
 
-            if "json" == self.format:
+            if "json" == self.req_format:
                 self.response = json.loads(handle.read().decode('utf8'))
             else:
                 self.response = handle.read().decode('utf8')
@@ -207,7 +207,7 @@ class APICall(object):
             elif self.debug:
                 return self
             else:
-                raise APIHTTPError(e, self.uri, self.format, arg_data)
+                raise APIHTTPError(e, self.uri, self.req_format, arg_data)
         except urllib_error.URLError:
             # Allows for testing without Internet access
             if self.debug:

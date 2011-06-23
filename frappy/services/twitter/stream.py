@@ -30,7 +30,7 @@ class TwitterJSONIter(object):
             except ValueError as e:
                 continue
             except urllib_error.HTTPError as e:
-                raise APIHTTPError(e, self.uri, self.format, self.arg_data)
+                raise APIHTTPError(e, self.uri, self.req_format, self.arg_data)
 
 class TwitterStreamCall(APICall):
     def _handle_response(self, req, uri, arg_data):
@@ -60,6 +60,6 @@ class TwitterStream(TwitterStreamCall):
         uriparts += (str(api_version),)
 
         TwitterStreamCall.__init__(
-            self, auth=auth, format="json", domain=domain,
+            self, auth=auth, req_format="json", domain=domain,
             callable_cls=TwitterStreamCall,
             secure=secure, uriparts=uriparts)

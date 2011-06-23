@@ -81,7 +81,7 @@ class Twitter(APICall):
 
     """
     def __init__(
-        self, format="json",
+        self, req_format="json",
         domain="api.twitter.com", secure=True, auth=None,
         api_version=_DEFAULT, debug=False):
         """
@@ -108,8 +108,8 @@ class Twitter(APICall):
         if not auth:
             auth = NoAuth()
 
-        if (format not in ("json", "xml", "")):
-            raise ValueError("Unknown data format '%s'" %(format))
+        if (req_format not in ("json", "xml", "")):
+            raise ValueError("Unknown data format '%s'" % (req_format))
 
         if api_version is _DEFAULT:
             if domain == 'api.twitter.com':
@@ -122,7 +122,7 @@ class Twitter(APICall):
             uriparts += (str(api_version),)
 
         APICall.__init__(
-            self, auth=auth, format=format, domain=domain,
+            self, auth=auth, req_format=req_format, domain=domain,
             secure=secure, uriparts=uriparts, debug=debug,
             post_actions=twitter_globals.POST_ACTIONS)
 
@@ -155,9 +155,9 @@ class Twitter(APICall):
 
         # Twitter allows for specifying request format in uri
         dot = ""
-        if self.format:
+        if self.req_format:
             dot = "."
 
-        self.uri += "%s%s" % (dot, self.format)
+        self.uri += "%s%s" % (dot, self.req_format)
 
 __all__ = ["Twitter"]
