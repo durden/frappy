@@ -59,7 +59,7 @@ class APICall(object):
     """
 
     def __init__(self, auth, format, domain, uriparts=None, secure=True,
-                 post_actions=None):
+                 post_actions=None, debug=False):
 
         """Initialize call API object"""
 
@@ -84,6 +84,10 @@ class APICall(object):
         self.uriparts = uriparts
         if self.uriparts is None:
             self.uriparts = ()
+
+        # Set to True to test requests without Internet access (useful for unit
+        # testing and just verifying that calls generate correct request uris)
+        self.debug = debug
 
     def __getattr__(self, k):
         """
@@ -187,5 +191,12 @@ class APICall(object):
         except urllib_error.HTTPError as e:
             if (e.code == 304):
                 return []
+            # Allows for testing without Internet access
+            elif self.debug:
+                return self
             else:
                 raise APIHTTPError(e, self.uri, self.format, arg_data)
+        except urllib_error.URLError:
+            # Allows for testing without Internet access
+            if self.debug:
+                return self

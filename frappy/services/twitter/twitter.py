@@ -83,7 +83,7 @@ class Twitter(APICall):
     def __init__(
         self, format="json",
         domain="api.twitter.com", secure=True, auth=None,
-        api_version=_DEFAULT):
+        api_version=_DEFAULT, debug=False):
         """
         Create a new twitter API connector.
 
@@ -123,7 +123,7 @@ class Twitter(APICall):
 
         APICall.__init__(
             self, auth=auth, format=format, domain=domain,
-            secure=secure, uriparts=uriparts,
+            secure=secure, uriparts=uriparts, debug=debug,
             post_actions=twitter_globals.POST_ACTIONS)
 
     @property
