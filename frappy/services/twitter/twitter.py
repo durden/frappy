@@ -105,9 +105,6 @@ class Twitter(APICall):
         `api_version` is used to set the base uri. By default it's
         '1'. If you are using "search.twitter.com" set this to None.
         """
-        if not auth:
-            auth = NoAuth()
-
         if (req_format not in ("json", "xml", "")):
             raise ValueError("Unknown data format '%s'" % (req_format))
 

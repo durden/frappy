@@ -8,6 +8,7 @@ except ImportError:
 import json
 
 from frappy.core.api import APICall, APIHTTPError
+from frappy.core.auth import NoAuth
 from twitter import Twitter
 
 class TwitterJSONIter(object):
@@ -54,7 +55,7 @@ class TwitterStream(TwitterStreamCall):
     breaks at which point it raises a TwitterHTTPError.)
     """
     def __init__(
-        self, domain="stream.twitter.com", secure=False, auth=None,
+        self, domain="stream.twitter.com", secure=False, auth=NoAuth,
         api_version='1'):
         uriparts = ()
         uriparts += (str(api_version),)

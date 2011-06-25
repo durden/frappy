@@ -3,6 +3,7 @@ Base implementation of Frappy framework.
 """
 
 
+from frappy.core.auth import NoAuth
 import requests
 
 try:
@@ -61,6 +62,9 @@ class APICall(object):
         """Initialize call API object"""
 
         self.auth = auth
+        if auth is None:
+            self.auth = NoAuth()
+
         self.req_format = req_format
         self.domain = domain
         self.uri = ""

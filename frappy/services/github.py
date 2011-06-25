@@ -24,6 +24,9 @@ class Github(APICall):
     >>> commit = g.repos.durden.frappy.commits.b812be8c8dda041a694fd1560106e4ca9521bc18()
     >>> commit.response['commit']['message']
     u'Fix Twitter service rate limit properties'
+    >>> x = g.repos.durden.frappy.commits(page=2,per_page=2)
+    >>> x.requested_uri
+    'https://api.github.com/repos/durden/frappy/commits?per_page=2&page=2'
     """
 
     def __init__(self, req_format="json", domain="api.github.com",
