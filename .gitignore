@@ -1,6 +1,5 @@
 ## Python
-twitter.egg-info
-twitter3.egg-info
+Frappy.egg-info
 *.pyc
 *.bak
 *.orig
