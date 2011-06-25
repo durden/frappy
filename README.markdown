@@ -11,6 +11,7 @@ easy to extend to other web APIs.
 ##Supported APIs
 
 * Twitter
+* Github
 * Forrst (coming soon)
 
 ###Contribution Guidelines
