@@ -5,6 +5,12 @@ Class to perform operations on the Github API
 from frappy.core.api import APICall
 
 
+# FIXME: Potential problem with github API:
+#           - SHA1 can start with a number so getting a specific commit will
+#             result in a syntax error. For example:
+#               commit = g.repos.durden.frappy.commits.
+#                               160185c313f7c49167ce122c85b13db527eeece2()
+
 class _DEFAULT(object):
     pass
 
