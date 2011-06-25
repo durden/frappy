@@ -1,5 +1,4 @@
 from frappy.core.api import APICall
-from frappy.core.auth import NoAuth
 
 
 class _DEFAULT(object):
