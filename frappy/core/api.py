@@ -99,11 +99,8 @@ class APICall(object):
         <domain>/statuses/public_timeline.
         """
 
-        try:
-            return object.__getattr__(self, k)
-        except AttributeError:
-            self.uriparts += (k,)
-            return self
+        self.uriparts += (k,)
+        return self
 
     def service_build_uri(self, **kwargs):
         """
