@@ -3,12 +3,7 @@ Base implementation of Frappy framework.
 """
 
 
-try:
-    import urllib.request as urllib_request
-    import urllib.error as urllib_error
-except ImportError:
-    import urllib2 as urllib_request
-    import urllib2 as urllib_error
+import requests
 
 try:
     import json
@@ -31,10 +26,10 @@ class APIHTTPError(APIError):
     general error interacting with the API.
     """
 
-    def __init__(self, err, uri, req_format, uriparts):
+    def __init__(self, response, uri, req_format, uriparts):
         """Initalize error object"""
 
-        self.err = err
+        self.response = response
         self.uri = uri
         self.req_format = req_format
         self.uriparts = uriparts
@@ -47,8 +42,8 @@ class APIHTTPError(APIError):
         return (
             "API sent status %i for URL: %s.%s using parameters: "
             "(%s)\ndetails: %s" % (
-                self.eerr.code, self.uri, self.req_format, self.uriparts,
-                self.err.fp.read()))
+                self.response.status_code, self.uri, self.req_format,
+                self.uriparts))
 
 
 class APICall(object):
@@ -170,40 +165,32 @@ class APICall(object):
         """
 
         self._build_uri(*args, **kwargs)
-
-        req = urllib_request.Request(self.uri, self.body, self.request_headers)
-
+        req = requests.get(self.uri)
         return self._handle_response(req, self.arg_data)
 
     def _handle_response(self, req, arg_data):
         """Verify response code and format data accordingly"""
 
-        try:
-            handle = urllib_request.urlopen(req)
-            self.response_headers = handle.headers
+        self.response_headers = req.headers
 
-            if "json" == self.req_format:
-                self.response = json.loads(handle.read().decode('utf8'))
-            else:
-                self.response = handle.read().decode('utf8')
+        if "json" == self.req_format:
+            self.response = json.loads(req.content.decode('utf8'))
+        else:
+            self.response = req.content.decode('utf8')
 
-            return self
-        except urllib_error.HTTPError as err:
-            if (err.code == 304):
+        # Roll over request to prepare for new one
+        self._reset_uri()
+
+        if req.status_code != 200:
+            if (req.status_code == 304):
                 return []
             # Allows for testing without Internet access
             elif self.debug:
                 return self
             else:
-                raise APIHTTPError(err, self.uri, self.req_format, arg_data)
-        except urllib_error.URLError:
-            # Allows for testing without Internet access
-            if self.debug:
-                return self
-
-        finally:
-            # Roll over request to prepare for new one
-            self._reset_uri()
+                raise APIHTTPError(self.response, self.requested_uri,
+                                   self.req_format, arg_data)
+        return self
 
     def _reset_uri(self):
         """Clear active request uri to make way for another request"""

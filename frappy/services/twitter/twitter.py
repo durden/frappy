@@ -131,14 +131,22 @@ class Twitter(APICall):
         """
         Remaining requests in the current rate-limit.
         """
-        return int(self.response_headers.getheader('X-RateLimit-Remaining'))
+
+        try:
+            return int(self.response_headers['x-ratelimit-remaining'])
+        except KeyError:
+            return 0
 
     @property
     def rate_limit_reset(self):
         """
         Time in UTC epoch seconds when the rate limit will reset.
         """
-        return int(self.reponse_headers.getheader('X-RateLimit-Reset'))
+
+        try:
+            return int(self.response_headers['x-ratelimit-reset'])
+        except KeyError:
+            return 0
 
     def service_build_uri(self, **kwargs):
         """
