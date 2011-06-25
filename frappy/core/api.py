@@ -31,13 +31,15 @@ class APIHTTPError(APIError):
     general error interacting with the API.
     """
 
-    def __init__(self, e, uri, req_format, uriparts):
+    def __init__(self, err, uri, req_format, uriparts):
         """Initalize error object"""
 
-        self.e = e
+        self.err = err
         self.uri = uri
         self.req_format = req_format
         self.uriparts = uriparts
+
+        APIError.__init__(self)
 
     def __str__(self):
         """Stringify error"""
@@ -45,8 +47,8 @@ class APIHTTPError(APIError):
         return (
             "API sent status %i for URL: %s.%s using parameters: "
             "(%s)\ndetails: %s" % (
-                self.e.code, self.uri, self.req_format, self.uriparts,
-                self.e.fp.read()))
+                self.eerr.code, self.uri, self.req_format, self.uriparts,
+                self.err.fp.read()))
 
 
 class APICall(object):
@@ -67,6 +69,7 @@ class APICall(object):
         self.req_format = req_format
         self.domain = domain
         self.uri = ""
+        self.requested_uri = ""
         self.secure = secure
         self.post_actions = post_actions
 
@@ -185,14 +188,14 @@ class APICall(object):
                 self.response = handle.read().decode('utf8')
 
             return self
-        except urllib_error.HTTPError as e:
-            if (e.code == 304):
+        except urllib_error.HTTPError as err:
+            if (err.code == 304):
                 return []
             # Allows for testing without Internet access
             elif self.debug:
                 return self
             else:
-                raise APIHTTPError(e, self.uri, self.req_format, arg_data)
+                raise APIHTTPError(err, self.uri, self.req_format, arg_data)
         except urllib_error.URLError:
             # Allows for testing without Internet access
             if self.debug:
