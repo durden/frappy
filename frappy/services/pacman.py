@@ -1,3 +1,7 @@
+"""
+Wrapper for fictional test service
+"""
+
 from frappy.core.api import APICall
 
 
