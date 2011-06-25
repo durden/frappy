@@ -11,6 +11,8 @@ try:
 except ImportError:
     import simplejson as json
 
+class DEFAULT_VERSION(object):
+    pass
 
 class APIError(Exception):
     """

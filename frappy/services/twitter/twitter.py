@@ -1,10 +1,6 @@
 
-from frappy.core.api import APICall
-from frappy.core.auth import NoAuth
+from frappy.core.api import APICall, DEFAULT_VERSION
 import twitter_globals
-
-class _DEFAULT(object):
-    pass
 
 
 class Twitter(APICall):
@@ -83,7 +79,7 @@ class Twitter(APICall):
     def __init__(
         self, req_format="json",
         domain="api.twitter.com", secure=True, auth=None,
-        api_version=_DEFAULT, debug=False):
+        api_version=DEFAULT_VERSION, debug=False):
         """
         Create a new twitter API connector.
 
@@ -108,7 +104,7 @@ class Twitter(APICall):
         if (req_format not in ("json", "xml", "")):
             raise ValueError("Unknown data format '%s'" % (req_format))
 
-        if api_version is _DEFAULT:
+        if api_version is DEFAULT_VERSION:
             if domain == 'api.twitter.com':
                 api_version = '1'
             else:

@@ -2,7 +2,7 @@
 Class to perform operations on the Github API
 """
 
-from frappy.core.api import APICall
+from frappy.core.api import APICall, DEFAULT_VERSION
 
 
 # FIXME: Potential problem with github API:
@@ -10,10 +10,6 @@ from frappy.core.api import APICall
 #             result in a syntax error. For example:
 #               commit = g.repos.durden.frappy.commits.
 #                               160185c313f7c49167ce122c85b13db527eeece2()
-
-class _DEFAULT(object):
-    pass
-
 
 class Github(APICall):
     """
@@ -30,7 +26,7 @@ class Github(APICall):
     """
 
     def __init__(self, req_format="json", domain="api.github.com",
-                 secure=True, auth=None, api_version=_DEFAULT):
+                 secure=True, auth=None, api_version=DEFAULT_VERSION):
 
         APICall.__init__(self, auth=auth, req_format=req_format, domain=domain,
                          secure=secure)
