@@ -179,13 +179,13 @@ class APICall(object):
 
         self.response_headers = req.headers
 
+        # Roll over request to prepare for new one
+        self._reset_uri()
+
         if "json" == self.req_format:
             self.response = json.loads(req.content.decode('utf8'))
         else:
             self.response = req.content.decode('utf8')
-
-        # Roll over request to prepare for new one
-        self._reset_uri()
 
         if req.status_code != 200:
             if (req.status_code == 304):
