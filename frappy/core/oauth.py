@@ -15,7 +15,6 @@ import hmac
 import base64
 
 
-
 def write_token_file(filename, oauth_token, oauth_token_secret):
     """
     Write a token file to hold the oauth token and oauth token secret.
@@ -24,6 +23,7 @@ def write_token_file(filename, oauth_token, oauth_token_secret):
     print(oauth_token, file=oauth_file)
     print(oauth_token_secret, file=oauth_file)
     oauth_file.close()
+
 
 def read_token_file(filename):
     """
@@ -62,15 +62,18 @@ class OAuth(Auth):
 
         enc_params = urlencode_noplus(sorted(params.items()))
 
-        key = self.consumer_secret + "&" + urllib_parse.quote(self.token_secret, '')
+        key = self.consumer_secret + "&" + \
+                        urllib_parse.quote(self.token_secret, '')
 
         message = '&'.join(
-            urllib_parse.quote(i, '') for i in [method.upper(), base_url, enc_params])
+            urllib_parse.quote(i, '') for i in [method.upper(), base_url,
+                                                enc_params])
 
         signature = (base64.b64encode(hmac.new(
                     key.encode('ascii'), message.encode('ascii'), hashlib.sha1)
                                       .digest()))
-        return enc_params + "&" + "oauth_signature=" + urllib_parse.quote(signature, '')
+        return enc_params + "&" + "oauth_signature=" + \
+                urllib_parse.quote(signature, '')
 
     def generate_headers(self):
         return {}
@@ -79,8 +82,10 @@ class OAuth(Auth):
 # %20 rather than '+' when constructing an OAuth signature (and therefore
 # also in the request itself.)
 # So here is a specialized version which does exactly that.
+
+
 def urlencode_noplus(query):
-    if hasattr(query,"items"):
+    if hasattr(query, "items"):
         # mapping objects
         query = list(query.items())
 
@@ -95,5 +100,6 @@ def urlencode_noplus(query):
             v = v.encode('utf-8')
         else:
             v = str(v)
-        encoded_bits.append("%s=%s" % (urllib_parse.quote(n, ""), urllib_parse.quote(v, "")))
+        encoded_bits.append("%s=%s" % (urllib_parse.quote(n, ""),
+                            urllib_parse.quote(v, "")))
     return "&".join(encoded_bits)

@@ -13,10 +13,12 @@ try:
 except ImportError:
     from htmlentitydefs import name2codepoint
 
+
 def htmlentitydecode(s):
     return re.sub(
         '&(%s);' % '|'.join(name2codepoint),
         lambda m: chr(name2codepoint[m.group(1)]), s)
+
 
 def smrt_input(globals_, locals_, ps1=">>> ", ps2="... "):
     inputs = []
@@ -33,6 +35,7 @@ def smrt_input(globals_, locals_, ps1=">>> ", ps2="... "):
             return
         except SyntaxError:
             pass
+
 
 def printNicely(string):
     if hasattr(sys.stdout, 'buffer'):

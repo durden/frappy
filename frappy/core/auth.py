@@ -1,9 +1,15 @@
+"""
+Authentication module to easily append different types of authentication to API
+calls
+"""
+
 try:
     import urllib.parse as urllib_parse
     from base64 import encodebytes
 except ImportError:
     import urllib as urllib_parse
     from base64 import encodestring as encodebytes
+
 
 class Auth(object):
     """
@@ -20,6 +26,7 @@ class Auth(object):
         """Generates headers which should be added to the request if required
         by the authentication scheme in use."""
         raise NotImplementedError()
+
 
 class UserPassAuth(Auth):
     """
@@ -39,6 +46,7 @@ class UserPassAuth(Auth):
         return {b"Authorization":
                 b"Basic " + encodebytes(("%s:%s" % (self.username, self.password))
                 .encode('utf8')).strip(b'\n')}
+
 
 class NoAuth(Auth):
     """

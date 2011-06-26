@@ -63,8 +63,8 @@ prompt: <twitter_shell_prompt e.g. '[cyan]twitter[R]> '>
 
 from __future__ import print_function
 
-CONSUMER_KEY='uS6hO2sV6tDKIOeVjhnFnQ'
-CONSUMER_SECRET='MEYTOS97VvlHX7K1rwHPEqVpTSqZ71HtvoK4sVuYk'
+CONSUMER_KEY = 'uS6hO2sV6tDKIOeVjhnFnQ'
+CONSUMER_SECRET = 'MEYTOS97VvlHX7K1rwHPEqVpTSqZ71HtvoK4sVuYk'
 
 import sys
 import time
@@ -72,6 +72,7 @@ from getopt import gnu_getopt as getopt, GetoptError
 from getpass import getpass
 import re
 import os.path
+
 try:
     from ConfigParser import SafeConfigParser
 except ImportError:
@@ -107,6 +108,7 @@ OPTIONS = {
     'secure': True,
 }
 
+
 def parse_args(args, options):
     long_opts = ['help', 'format=', 'refresh', 'oauth=',
                  'refresh-rate=', 'config=', 'length=', 'timestamp',
@@ -136,9 +138,11 @@ def parse_args(args, options):
         elif opt == '--oauth':
             options['oauth_filename'] = arg
 
-    if extra_args and not ('action' in options and options['action'] == 'help'):
+    if extra_args and not ('action' in options and \
+            options['action'] == 'help'):
         options['action'] = extra_args[0]
     options['extra_args'] = extra_args[1:]
+
 
 def get_time_string(status, options, format="%a %b %d %H:%M:%S +0000 %Y"):
     timestamp = options["timestamp"]
@@ -158,11 +162,13 @@ def get_time_string(status, options, format="%a %b %d %H:%M:%S +0000 %Y"):
         return time.strftime("%Y-%m-%d ", t)
     return ""
 
+
 class StatusFormatter(object):
     def __call__(self, status, options):
-        return ("%s%s %s" %(
+        return ("%s%s %s" % (
             get_time_string(status, options),
             status['user']['screen_name'], status['text']))
+
 
 class AnsiStatusFormatter(object):
     def __init__(self):
@@ -170,27 +176,31 @@ class AnsiStatusFormatter(object):
 
     def __call__(self, status, options):
         colour = self._colourMap.colourFor(status['user']['screen_name'])
-        return ("%s%s%s%s %s" %(
+        return ("%s%s%s%s %s" % (
             get_time_string(status, options),
             ansi.cmdColour(colour), status['user']['screen_name'],
             ansi.cmdReset(), status['text']))
 
+
 class VerboseStatusFormatter(object):
     def __call__(self, status, options):
-        return ("-- %s (%s) on %s\n%s\n" %(
+        return ("-- %s (%s) on %s\n%s\n" % (
             status['user']['screen_name'],
             status['user']['location'],
             status['created_at'],
             status['text']))
 
+
 class URLStatusFormatter(object):
     urlmatch = re.compile(r'https?://\S+')
+
     def __call__(self, status, options):
         urls = self.urlmatch.findall(status['text'])
         return '\n'.join(urls) if urls else ""
 
 
 class ListsFormatter(object):
+
     def __call__(self, list):
         if list['description']:
             list_str = "%-30s (%s)" % (list['name'], list['description'])
@@ -198,31 +208,40 @@ class ListsFormatter(object):
             list_str = "%-30s" % (list['name'])
         return "%s\n" % list_str
 
+
 class ListsVerboseFormatter(object):
+
     def __call__(self, list):
-        list_str = "%-30s\n description: %s\n members: %s\n mode:%s\n" % (list['name'], list['description'], list['member_count'], list['mode'])
+        list_str = "%-30s\n description: %s\n members: %s\n mode:%s\n" % (
+            list['name'], list['description'], list['member_count'],
+            list['mode'])
         return list_str
 
+
 class AnsiListsFormatter(object):
+
     def __init__(self):
         self._colourMap = ansi.ColourMap()
 
     def __call__(self, list):
         colour = self._colourMap.colourFor(list['name'])
-        return ("%s%-15s%s %s" %(
+        return ("%s%-15s%s %s" % (
             ansi.cmdColour(colour), list['name'],
             ansi.cmdReset(), list['description']))
 
 
 class AdminFormatter(object):
+
     def __call__(self, action, user):
-        user_str = "%s (%s)" %(user['screen_name'], user['name'])
+        user_str = "%s (%s)" % (user['screen_name'], user['name'])
         if action == "follow":
-            return "You are now following %s.\n" %(user_str)
+            return "You are now following %s.\n" % (user_str)
         else:
-            return "You are no longer following %s.\n" %(user_str)
+            return "You are no longer following %s.\n" % (user_str)
+
 
 class VerboseAdminFormatter(object):
+
     def __call__(self, action, user):
         return("-- %s: %s (%s): %s" % (
             "Following" if action == "follow" else "Leaving",
@@ -230,20 +249,27 @@ class VerboseAdminFormatter(object):
             user['name'],
             user['url']))
 
+
 class SearchFormatter(object):
+
     def __call__(self, result, options):
-        return("%s%s %s" %(
+        return("%s%s %s" % (
             get_time_string(result, options, "%a, %d %b %Y %H:%M:%S +0000"),
             result['from_user'], result['text']))
 
+
 class VerboseSearchFormatter(SearchFormatter):
-    pass #Default to the regular one
+    # Default to the regular one
+    pass
+
 
 class URLSearchFormatter(object):
     urlmatch = re.compile(r'https?://\S+')
+
     def __call__(self, result, options):
         urls = self.urlmatch.findall(result['text'])
         return '\n'.join(urls) if urls else ""
+
 
 class AnsiSearchFormatter(object):
     def __init__(self):
@@ -251,12 +277,14 @@ class AnsiSearchFormatter(object):
 
     def __call__(self, result, options):
         colour = self._colourMap.colourFor(result['from_user'])
-        return ("%s%s%s%s %s" %(
+        return ("%s%s%s%s %s" % (
             get_time_string(result, options, "%a, %d %b %Y %H:%M:%S +0000"),
             ansi.cmdColour(colour), result['from_user'],
             ansi.cmdReset(), result['text']))
 
 _term_encoding = None
+
+
 def get_term_encoding():
     global _term_encoding
     if not _term_encoding:
@@ -272,45 +300,47 @@ status_formatters = {
     'default': StatusFormatter,
     'verbose': VerboseStatusFormatter,
     'urls': URLStatusFormatter,
-    'ansi': AnsiStatusFormatter
-}
+    'ansi': AnsiStatusFormatter}
+
 formatters['status'] = status_formatters
 
 admin_formatters = {
     'default': AdminFormatter,
     'verbose': VerboseAdminFormatter,
     'urls': AdminFormatter,
-    'ansi': AdminFormatter
-}
+    'ansi': AdminFormatter}
+
 formatters['admin'] = admin_formatters
 
 search_formatters = {
     'default': SearchFormatter,
     'verbose': VerboseSearchFormatter,
     'urls': URLSearchFormatter,
-    'ansi': AnsiSearchFormatter
-}
+    'ansi': AnsiSearchFormatter}
+
 formatters['search'] = search_formatters
 
 lists_formatters = {
     'default': ListsFormatter,
     'verbose': ListsVerboseFormatter,
     'urls': None,
-    'ansi': AnsiListsFormatter
-}
+    'ansi': AnsiListsFormatter}
+
 formatters['lists'] = lists_formatters
+
 
 def get_formatter(action_type, options):
     formatters_dict = formatters.get(action_type)
     if (not formatters_dict):
         raise APIError(
-            "There was an error finding a class of formatters for your type (%s)"
-            %(action_type))
+            "There was an error finding class of formatters for your type (%s)"
+            % (action_type))
     f = formatters_dict.get(options['format'])
     if (not f):
         raise APIError(
-            "Unknown formatter '%s' for status actions" %(options['format']))
+            "Unknown formatter '%s' for status actions" % (options['format']))
     return f()
+
 
 class Action(object):
 
@@ -324,7 +354,7 @@ class Action(object):
         if not careful:
             sample = '(Y/n)'
 
-        prompt = 'You really want to %s %s? ' %(subject, sample)
+        prompt = 'You really want to %s %s? ' % (subject, sample)
         try:
             answer = input(prompt).lower()
             if careful:
@@ -332,7 +362,8 @@ class Action(object):
             else:
                 return answer not in ('no', 'n')
         except EOFError:
-            print(file=sys.stderr) # Put Newline since Enter was never pressed
+            # Put Newline since Enter was never pressed
+            print(file=sys.stderr)
             # TODO:
                 #   Figure out why on OS X the raw_input keeps raising
                 #   EOFError and is never able to reset and get more input
@@ -356,12 +387,15 @@ class Action(object):
             print('\n[Keyboard Interrupt]', file=sys.stderr)
             pass
 
+
 class NoSuchActionError(Exception):
     pass
 
+
 class NoSuchAction(Action):
     def __call__(self, twitter, options):
-        raise NoSuchActionError("No such action: %s" %(options['action']))
+        raise NoSuchActionError("No such action: %s" % (options['action']))
+
 
 class StatusAction(Action):
     def __call__(self, twitter, options):
@@ -372,12 +406,14 @@ class StatusAction(Action):
             if statusStr.strip():
                 printNicely(statusStr)
 
+
 class SearchAction(Action):
     def __call__(self, twitter, options):
         # We need to be pointing at search.twitter.com to work, and it is less
         # tangly to do it here than in the main()
-        twitter.domain="search.twitter.com"
-        twitter.uriparts=()
+        twitter.domain = "search.twitter.com"
+        twitter.uriparts = ()
+
         # We need to bypass the TwitterCall parameter encoding, so we
         # don't encode the plus sign, so we have to encode it ourselves
         query_string = "+".join(
@@ -390,6 +426,7 @@ class SearchAction(Action):
             resultStr = f(result, options)
             if resultStr.strip():
                 printNicely(resultStr)
+
 
 class AdminAction(Action):
     def __call__(self, twitter, options):
@@ -408,6 +445,7 @@ class AdminAction(Action):
             print(e)
         else:
             printNicely(af(options['action'], user))
+
 
 class ListsAction(StatusAction):
     def getStatuses(self, twitter, options):
@@ -440,21 +478,26 @@ class FriendsAction(StatusAction):
     def getStatuses(self, twitter, options):
         return reversed(twitter.statuses.friends_timeline(count=options["length"]))
 
+
 class PublicAction(StatusAction):
     def getStatuses(self, twitter, options):
         return reversed(twitter.statuses.public_timeline(count=options["length"]))
+
 
 class RepliesAction(StatusAction):
     def getStatuses(self, twitter, options):
         return reversed(twitter.statuses.replies(count=options["length"]))
 
+
 class FollowAction(AdminAction):
     def getUser(self, twitter, user):
         return twitter.friendships.create(id=user)
 
+
 class LeaveAction(AdminAction):
     def getUser(self, twitter, user):
         return twitter.friendships.destroy(id=user)
+
 
 class SetStatusAction(Action):
     def __call__(self, twitter, options):
@@ -463,15 +506,18 @@ class SetStatusAction(Action):
                      else str(input("message: ")))
         twitter.statuses.update(status=statusTxt)
 
+
 class TwitterShell(Action):
 
     def render_prompt(self, prompt):
         '''Parses the `prompt` string and returns the rendered version'''
-        prompt = prompt.strip("'").replace("\\'","'")
+        prompt = prompt.strip("'").replace("\\'", "'")
+
         for colour in ansi.COLOURS_NAMED:
-            if '[%s]' %(colour) in prompt:
+            if '[%s]' % (colour) in prompt:
                 prompt = prompt.replace(
-                    '[%s]' %(colour), ansi.cmdColourNamed(colour))
+                    '[%s]' % (colour), ansi.cmdColourNamed(colour))
+
         prompt = prompt.replace('[R]', ansi.cmdReset())
         return prompt
 
@@ -491,11 +537,12 @@ class TwitterShell(Action):
                     continue
                 elif options['action'] == 'help':
                     print('''\ntwitter> `action`\n
-                          The Shell Accepts all the command line actions along with:
+                          Shell accepts all command line actions along with:
 
                           exit    Leave the twitter shell (^D may also be used)
 
-                          Full CMD Line help is appended below for your convinience.''', file=sys.stderr)
+                          Full CMD Line help is appended below.''',
+                    file=sys.stderr)
                 Action()(twitter, options)
                 options['action'] = ''
             except NoSuchActionError as e:
@@ -510,6 +557,7 @@ class TwitterShell(Action):
                 else:
                     raise SystemExit(0)
 
+
 class PythonPromptAction(Action):
     def __call__(self, twitter, options):
         try:
@@ -518,29 +566,31 @@ class PythonPromptAction(Action):
         except EOFError:
             pass
 
+
 class HelpAction(Action):
     def __call__(self, twitter, options):
         print(__doc__)
+
 
 class DoNothingAction(Action):
     def __call__(self, twitter, options):
         pass
 
 actions = {
-    'authorize' : DoNothingAction,
-    'follow'    : FollowAction,
-    'friends'   : FriendsAction,
-    'list'      : ListsAction,
-    'mylist'    : MyListsAction,
-    'help'      : HelpAction,
-    'leave'     : LeaveAction,
-    'public'    : PublicAction,
-    'pyprompt'  : PythonPromptAction,
-    'replies'   : RepliesAction,
-    'search'    : SearchAction,
-    'set'       : SetStatusAction,
-    'shell'     : TwitterShell,
-}
+    'authorize': DoNothingAction,
+    'follow': FollowAction,
+    'friends': FriendsAction,
+    'list': ListsAction,
+    'mylist': MyListsAction,
+    'help': HelpAction,
+    'leave': LeaveAction,
+    'public': PublicAction,
+    'pyprompt': PythonPromptAction,
+    'replies': RepliesAction,
+    'search': SearchAction,
+    'set': SetStatusAction,
+    'shell': TwitterShell, }
+
 
 def loadConfig(filename):
     options = dict(OPTIONS)
@@ -552,12 +602,13 @@ def loadConfig(filename):
                 options[option] = cp.get('twitter', option)
     return options
 
+
 def main(args=sys.argv[1:]):
     arg_options = {}
     try:
         parse_args(args, arg_options)
     except GetoptError as e:
-        print("I can't do that, %s." %(e), file=sys.stderr)
+        print("I can't do that, %s." % (e), file=sys.stderr)
         print(file=sys.stderr)
         raise SystemExit(1)
 
@@ -570,12 +621,14 @@ def main(args=sys.argv[1:]):
     # arguments.
     options = dict(OPTIONS)
     for d in config_options, arg_options:
-        for k,v in list(d.items()):
-            if v: options[k] = v
+        for k, v in list(d.items()):
+            if v:
+                options[k] = v
 
     if options['refresh'] and options['action'] not in (
         'friends', 'public', 'replies'):
-        print("You can only refresh the friends, public, or replies actions.", file=sys.stderr)
+        print("You can only refresh the friends, public, or replies actions.",
+               file=sys.stderr)
         print("Use 'twitter -h' for help.", file=sys.stderr)
         return 1
 

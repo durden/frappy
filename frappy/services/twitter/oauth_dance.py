@@ -13,7 +13,6 @@ except NameError:
     _input = input
 
 
-
 def oauth_dance(app_name, consumer_key, consumer_secret, token_filename=None):
     """
     Perform the OAuth dance with some command-line prompts. Return the
@@ -44,9 +43,11 @@ type it here:
 
     try:
         r = webbrowser.open(oauth_url)
-        time.sleep(2) # Sometimes the last command can print some
-                      # crap. Wait a bit so it doesn't mess up the next
-                      # prompt.
+
+        # Sometimes the last command can print some crap. Wait a bit so it
+        # doesn't mess up the next prompt.
+
+        time.sleep(2)
         if not r:
             raise Exception()
     except:
@@ -69,6 +70,7 @@ your PIN:
         print("That's it! Your authorization keys have been written to %s." % (
             token_filename))
     return oauth_token, oauth_token_secret
+
 
 def parse_oauth_tokens(result):
     for r in result.split('&'):

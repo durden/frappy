@@ -153,7 +153,6 @@ class Twitter(APICall):
         if id:
             self.uri += "/%s" % (id)
 
-
         # Twitter allows for specifying request format in uri
         dot = ""
         if self.req_format:

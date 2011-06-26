@@ -22,16 +22,17 @@ RESET = "0"
 
 COLOURS_NAMED = dict(list(zip(
     ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white'],
-    [str(x) for x in range(30, 38)]
-)))
+    [str(x) for x in range(30, 38)])))
+
 COLOURS_MIDS = [
     colour for name, colour in list(COLOURS_NAMED.items())
-    if name not in ('black', 'white')
-]
+    if name not in ('black', 'white')]
+
 
 class AnsiColourException(Exception):
     ''' Exception while processing ansi colours '''
     pass
+
 
 class ColourMap(object):
     '''
@@ -51,12 +52,14 @@ class ColourMap(object):
             self._cmap[string] = next(self._colourIter)
         return self._cmap[string]
 
+
 def cmdReset():
     ''' Returns the ansi cmd colour for a RESET '''
     if sys.stdout.isatty():
         return ESC + "[0m"
     else:
         return ""
+
 
 def cmdColour(colour):
     '''
@@ -68,9 +71,10 @@ def cmdColour(colour):
     else:
         return ""
 
+
 def cmdColourNamed(colour):
     ''' Return the ansi cmdColour for a given named `colour` '''
     try:
         return cmdColour(COLOURS_NAMED[colour])
     except KeyError:
-        raise AnsiColourException('Unknown Colour %s' %(colour))
+        raise AnsiColourException('Unknown Colour %s' % (colour))

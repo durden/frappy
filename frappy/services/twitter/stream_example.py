@@ -16,6 +16,7 @@ from .stream import TwitterStream
 from .auth import UserPassAuth
 from .util import printNicely
 
+
 def main(args=sys.argv[1:]):
     if not args[1:]:
         print(__doc__)

@@ -24,6 +24,4 @@ The TwitterStream class
 """
 __doc__ += TwitterStream.__doc__
 
-
-
 __all__ = ["Twitter", "TwitterStream"]

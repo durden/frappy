@@ -1,8 +1,13 @@
+"""
+Small wrapper around Twitter streaming API
+"""
+
 import urllib2
 import json
 
 from frappy.core.api import APIHTTPError, DEFAULT_VERSION
 from twitter import Twitter
+
 
 class TwitterJSONIter(object):
 
@@ -25,6 +30,7 @@ class TwitterJSONIter(object):
             except urllib2.HTTPError as e:
                 raise APIHTTPError(e, self.uri, self.req_format, self.arg_data)
 
+
 class TwitterStream(Twitter):
     """
     Interface to the Twitter Stream API (stream.twitter.com). This can
@@ -32,11 +38,11 @@ class TwitterStream(Twitter):
     result of calling a method will be an iterator that yields objects
     decoded from the stream. For example::
 
-        twitter_stream = TwitterStream(auth=UserPassAuth('joe', 'joespassword'))
-        iterator = twitter_stream.statuses.sample()
+    twitter_stream = TwitterStream(auth=UserPassAuth('joe', 'joespassword'))
+    iterator = twitter_stream.statuses.sample()
 
-        for tweet in iterator:
-            ...do something with this tweet...
+    for tweet in iterator:
+        ...do something with this tweet...
 
     The iterator will yield tweets forever and ever (until the stream
     breaks at which point it raises a TwitterHTTPError.)

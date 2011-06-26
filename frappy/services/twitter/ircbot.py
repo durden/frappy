@@ -68,16 +68,16 @@ PREFIXES = dict(
     cats=dict(
         new_tweet="=^_^= ",
         error="=O_o= ",
-        inform="=o_o= "
-        ),
+        inform="=o_o= "),
     none=dict(
-        new_tweet=""
-        ),
-    )
-ACTIVE_PREFIXES=dict()
+        new_tweet=""),)
+
+ACTIVE_PREFIXES = dict()
+
 
 def get_prefix(prefix_typ=None):
-    return ACTIVE_PREFIXES.get(prefix_typ, ACTIVE_PREFIXES.get('new_tweet', ''))
+    return ACTIVE_PREFIXES.get(prefix_typ, ACTIVE_PREFIXES.get('new_tweet',
+                                                                ''))
 
 
 try:
@@ -85,14 +85,17 @@ try:
 except ImportError:
     raise ImportError(
         "This module requires python irclib available from "
-        + "https://github.com/sixohsix/python-irclib/zipball/python-irclib3-0.4.8")
+        + "https://github.com/sixohsix/python-irclib/zipball/"
+        + "python-irclib3-0.4.8")
 
 OAUTH_FILE = os.environ.get('HOME', '') + os.sep + '.twitterbot_oauth'
+
 
 def debug(msg):
     # uncomment this for debug text stuff
     # print(msg, file=sys.stdout)
     pass
+
 
 class SchedTask(object):
     def __init__(self, task, delta):
@@ -101,7 +104,7 @@ class SchedTask(object):
         self.next = time.time()
 
     def __repr__(self):
-        return "<SchedTask %s next:%i delta:%i>" %(
+        return "<SchedTask %s next:%i delta:%i>" % (
             self.task.__name__, self.__next__, self.delta)
 
     def __lt__(self, other):
@@ -109,6 +112,7 @@ class SchedTask(object):
 
     def __call__(self):
         return self.task()
+
 
 class Scheduler(object):
     def __init__(self, tasks):
@@ -159,7 +163,8 @@ class TwitterBot(object):
         self.sched = Scheduler(
             (SchedTask(self.process_events, 1),
              SchedTask(self.check_statuses, 120)))
-        self.lastUpdate = (datetime.utcnow() - timedelta(minutes=10)).utctimetuple()
+        self.lastUpdate = (datetime.utcnow() -
+                                    timedelta(minutes=10)).utctimetuple()
 
     def check_statuses(self):
         debug("In check_statuses")
@@ -182,7 +187,7 @@ class TwitterBot(object):
                 # TODO This would be better if we only ignored messages
                 #   to people who are not on our following list.
                 if not text.startswith(b"@"):
-                    msg = "%s %s%s%s %s" %(
+                    msg = "%s %s%s%s %s" % (
                         get_prefix(),
                         IRC_BOLD, update['user']['screen_name'],
                         IRC_BOLD, text.decode('utf8'))
@@ -227,51 +232,51 @@ class TwitterBot(object):
                 conn.ctcp_reply(source, "CLIENTINFO PING VERSION CLIENTINFO")
 
     def privmsg_channels(self, msg):
-        return_response=True
-        channels=self.config.get('irc','channel').split(',')
+        return_response = True
+        channels = self.config.get('irc', 'channel').split(',')
         return self.ircServer.privmsg_many(channels, msg.encode('utf8'))
 
     def follow(self, conn, evt, name):
         userNick = evt.source().split('!')[0]
         friends = [x['name'] for x in self.twitter.statuses.friends()]
-        debug("Current friends: %s" %(friends))
+        debug("Current friends: %s" % (friends))
         if (name in friends):
             conn.privmsg(
                 userNick,
-                "%sI'm already following %s." %(get_prefix('error'), name))
+                "%sI'm already following %s." % (get_prefix('error'), name))
         else:
             try:
                 self.twitter.friendships.create(id=name)
             except TwitterError:
                 conn.privmsg(
                     userNick,
-                    "%sI can't follow that user. Are you sure the name is correct?" %(
-                        get_prefix('error')
-                        ))
+                    "%sI can't follow that user. Are you sure the name is correct?" % (
+                        get_prefix('error')))
                 return
             conn.privmsg(
                 userNick,
-                "%sOkay! I'm now following %s." %(get_prefix('followed'), name))
+                "%sOkay! I'm now following %s." % (get_prefix('followed'),
+                                                   name))
             self.privmsg_channels(
-                "%s%s has asked me to start following %s" %(
+                "%s%s has asked me to start following %s" % (
                     get_prefix('inform'), userNick, name))
 
     def unfollow(self, conn, evt, name):
         userNick = evt.source().split('!')[0]
         friends = [x['name'] for x in self.twitter.statuses.friends()]
-        debug("Current friends: %s" %(friends))
+        debug("Current friends: %s" % (friends))
         if (name not in friends):
             conn.privmsg(
                 userNick,
-                "%sI'm not following %s." %(get_prefix('error'), name))
+                "%sI'm not following %s." % (get_prefix('error'), name))
         else:
             self.twitter.friendships.destroy(id=name)
             conn.privmsg(
                 userNick,
-                "%sOkay! I've stopped following %s." %(
+                "%sOkay! I've stopped following %s." % (
                     get_prefix('stop_follow'), name))
             self.privmsg_channels(
-                "%s%s has asked me to stop following %s" %(
+                "%s%s has asked me to stop following %s" % (
                     get_prefix('inform'), userNick, name))
 
     def _irc_connect(self):
@@ -279,7 +284,7 @@ class TwitterBot(object):
             self.config.get('irc', 'server'),
             self.config.getint('irc', 'port'),
             self.config.get('irc', 'nick'))
-        channels=self.config.get('irc', 'channel').split(',')
+        channels = self.config.get('irc', 'channel').split(',')
         for channel in channels:
             self.ircServer.join(channel)
 
@@ -332,6 +337,7 @@ def load_config(filename):
 # comment in the Linux kernel that goes "FUCK me gently with
 # a chainsaw." Pretty sure Linus himself wrote it.
 
+
 def main():
     configFilename = "twitterbot.ini"
     if (sys.argv[1:]):
@@ -342,7 +348,7 @@ def main():
             raise Exception()
         load_config(configFilename)
     except Exception as e:
-        print("Error while loading ini file %s" %(
+        print("Error while loading ini file %s" % (
             configFilename), file=sys.stderr)
         print(e, file=sys.stderr)
         print(__doc__, file=sys.stderr)

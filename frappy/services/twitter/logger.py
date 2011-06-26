@@ -37,6 +37,7 @@ from .util import printNicely
 def log_debug(msg):
     print(msg, file=sys.stderr)
 
+
 def get_tweets(twitter, screen_name, max_id=None):
     kwargs = dict(count=3200, screen_name=screen_name)
     if max_id:
@@ -61,6 +62,7 @@ def get_tweets(twitter, screen_name, max_id=None):
         n_tweets += 1
     return n_tweets, max_id
 
+
 def main(args=sys.argv[1:]):
     twitter = Twitter(
         auth=NoAuth(),
@@ -83,12 +85,13 @@ def main(args=sys.argv[1:]):
         try:
             tweets_processed, max_id = get_tweets(twitter, screen_name, max_id)
             n_tweets += tweets_processed
-            log_debug("Processed %i tweets (max_id %s)" %(n_tweets, max_id))
+            log_debug("Processed %i tweets (max_id %s)" % (n_tweets, max_id))
             if tweets_processed == 0:
                 log_debug("That's it, we got all the tweets. Done.")
                 break
         except TwitterError as e:
-            log_debug("Twitter bailed out. I'm going to sleep a bit then try again")
+            log_debug("Twitter bailed out. I'm going to sleep a bit then "
+                      + "try again")
             sleep(3)
 
     return 0
