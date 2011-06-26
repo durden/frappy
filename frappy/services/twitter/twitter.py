@@ -105,7 +105,7 @@ class Twitter(APICall):
             raise ValueError("Unknown data format '%s'" % (req_format))
 
         if api_version is DEFAULT_VERSION:
-            if domain == 'api.twitter.com':
+            if domain == 'api.twitter.com' or domain == 'stream.twitter.com':
                 api_version = '1'
             else:
                 api_version = None
