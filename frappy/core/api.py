@@ -171,7 +171,7 @@ class APICall(object):
         """
 
         self._build_uri(*args, **kwargs)
-        req = requests.get(self.uri)
+        req = requests.get(self.uri, headers=self.request_headers)
         return self._handle_response(req, self.arg_data)
 
     def _handle_response(self, req, arg_data):
