@@ -2,7 +2,7 @@
 Class to perform operations on the Github API
 """
 
-from frappy.core.api import APICall, DEFAULT_VERSION
+from frappy.core.api import APICall
 
 
 # FIXME: Potential problem with github API:
@@ -26,7 +26,7 @@ class Github(APICall):
     """
 
     def __init__(self, req_format="json", domain="api.github.com",
-                 secure=True, auth=None, api_version=DEFAULT_VERSION):
+                 secure=True, auth=None):
 
         APICall.__init__(self, auth=auth, req_format=req_format, domain=domain,
                          secure=secure)
