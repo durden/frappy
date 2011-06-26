@@ -12,4 +12,4 @@ class Pacman(APICall):
                  secure=False, auth=None, api_version=DEFAULT_VERSION):
 
         APICall.__init__(self, auth=auth, req_format=req_format, domain=domain,
-                         secure=secure)
+                         secure=secure, debug=debug)
