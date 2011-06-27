@@ -119,28 +119,6 @@ class Twitter(APICall):
             secure=secure, uriparts=uriparts, debug=debug,
             post_actions=twitter_globals.POST_ACTIONS)
 
-    @property
-    def rate_limit_remaining(self):
-        """
-        Remaining requests in the current rate-limit.
-        """
-
-        try:
-            return int(self.response_headers['x-ratelimit-remaining'])
-        except KeyError:
-            return 0
-
-    @property
-    def rate_limit_reset(self):
-        """
-        Time in UTC epoch seconds when the rate limit will reset.
-        """
-
-        try:
-            return int(self.response_headers['x-ratelimit-reset'])
-        except KeyError:
-            return 0
-
     def service_build_uri(self, **kwargs):
         """
         Complete creation of request uri by adding additional Twitter specific

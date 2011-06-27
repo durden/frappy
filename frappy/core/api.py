@@ -207,3 +207,36 @@ class APICall(object):
         self.requested_uri = self.uri
         self.uri = ""
         self.uriparts = ()
+
+    @property
+    def rate_limit_remaining(self):
+        """
+        Remaining requests in the current rate-limit.
+        """
+
+        try:
+            return int(self.response_headers['x-ratelimit-remaining'])
+        except KeyError:
+            return 0
+
+    @property
+    def rate_limit(self):
+        """
+        Max number of requests allowed.
+        """
+
+        try:
+            return int(self.response_headers['x-ratelimit-limit'])
+        except KeyError:
+            return 0
+
+    @property
+    def rate_limit_reset(self):
+        """
+        Time in UTC epoch seconds when the rate limit will reset.
+        """
+
+        try:
+            return int(self.response_headers['x-ratelimit-reset'])
+        except KeyError:
+            return 0
