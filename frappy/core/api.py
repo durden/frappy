@@ -80,7 +80,7 @@ class APICall(object):
             self.post_actions = []
 
         self.response = None
-        self.headers = {'request': None, 'response': None}
+        self.headers = {'request': {}, 'response': {}}
 
         self.method = "GET"
         self.body = None
