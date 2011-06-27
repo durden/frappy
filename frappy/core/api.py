@@ -174,31 +174,32 @@ class APICall(object):
         """
 
         self._build_uri(*args, **kwargs)
-        req = requests.get(self.uri, headers=self.headers['request'])
-        return self._handle_response(req, self.arg_data)
+        resp = requests.get(self.uri, headers=self.headers['request'])
+        return self._handle_response(resp, self.arg_data)
 
-    def _handle_response(self, req, arg_data):
+    def _handle_response(self, resp, arg_data):
         """Verify response code and format data accordingly"""
 
-        self.headers['response'] = req.headers
+        self.headers['response'] = resp.headers
 
         # Roll over request to prepare for new one
         self._reset_uri()
 
-        if "json" == self.req_format:
-            self.response = json.loads(req.content.decode('utf8'))
-        else:
-            self.response = req.content.decode('utf8')
-
-        if req.status_code != 200:
-            if (req.status_code == 304):
+        if resp.status_code != 200:
+            if (resp.status_code == 304):
                 return []
             # Allows for testing without Internet access
             elif self.debug:
                 return self
             else:
-                raise APIHTTPError(req.status_code, self.requested_uri,
+                raise APIHTTPError(resp.status_code, self.requested_uri,
                                    self.req_format, arg_data)
+
+        if "json" == self.req_format:
+            self.response = json.loads(resp.content.decode('utf8'))
+        else:
+            self.response = resp.content.decode('utf8')
+
         return self
 
     def _reset_uri(self):
