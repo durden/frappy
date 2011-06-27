@@ -13,6 +13,7 @@ except ImportError:
 
 
 class DefaultVersion(object):
+    """Default version class"""
     pass
 
 
@@ -31,10 +32,10 @@ class APIHTTPError(APIError):
     general error interacting with the API.
     """
 
-    def __init__(self, response, uri, req_format, uriparts):
+    def __init__(self, status_code, uri, req_format, uriparts):
         """Initalize error object"""
 
-        self.response = response
+        self.status_code = status_code
         self.uri = uri
         self.req_format = req_format
         self.uriparts = uriparts
@@ -46,9 +47,8 @@ class APIHTTPError(APIError):
 
         return (
             "API sent status %i for URL: %s.%s using parameters: "
-            "(%s)\ndetails: %s" % (
-                self.response.status_code, self.uri, self.req_format,
-                self.uriparts))
+            "(%s)" % (self.status_code, self.uri, self.req_format,
+                      self.uriparts))
 
 
 class APICall(object):
@@ -196,7 +196,7 @@ class APICall(object):
             elif self.debug:
                 return self
             else:
-                raise APIHTTPError(self.response, self.requested_uri,
+                raise APIHTTPError(req.status_code, self.requested_uri,
                                    self.req_format, arg_data)
         return self
 
