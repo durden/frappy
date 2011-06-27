@@ -155,15 +155,17 @@ class APICall(object):
         parameters
         """
 
-        if self.auth:
-            self.headers['request'].update(self.auth.generate_headers())
-            self.arg_data = self.auth.encode_params(self.uri, self.method,
-                                                    kwargs)
+        if self.auth is None:
+            raise ValueError('Authentication is None')
 
-            if self.method == 'GET':
-                self.uri += '?' + self.arg_data
-            else:
-                self.body = self.arg_data.encode('utf8')
+        self.headers['request'].update(self.auth.generate_headers())
+        self.arg_data = self.auth.encode_params(self.uri, self.method,
+                                                kwargs)
+
+        if self.method == 'GET':
+            self.uri += '?' + self.arg_data
+        else:
+            self.body = self.arg_data.encode('utf8')
 
     def __call__(self, *args, **kwargs):
         """
