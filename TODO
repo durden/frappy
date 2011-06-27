@@ -1,7 +1,5 @@
-- Be sure to remove all Twitter references from core/
 - Update test code for new imports/organization
 - Write more tests for generic APICall class
-- Write proper setup.py and distribute
 - Clear out non-essential code/modules in twitter service
 - Replace TODO file with issues
 
