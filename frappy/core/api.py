@@ -12,7 +12,7 @@ except ImportError:
     import simplejson as json
 
 
-class DEFAULT_VERSION(object):
+class DefaultVersion(object):
     pass
 
 

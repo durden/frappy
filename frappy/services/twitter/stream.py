@@ -5,7 +5,7 @@ Small wrapper around Twitter streaming API
 import urllib2
 import json
 
-from frappy.core.api import APIHTTPError, DEFAULT_VERSION
+from frappy.core.api import APIHTTPError, DefaultVersion
 from twitter import Twitter
 
 
@@ -49,7 +49,7 @@ class TwitterStream(Twitter):
     """
     def __init__(self, domain="stream.twitter.com", secure=False, auth=None):
         Twitter.__init__(self, auth=auth, req_format="json", domain=domain,
-                         secure=secure, api_version=DEFAULT_VERSION)
+                         secure=secure, api_version=DefaultVersion)
 
     def __call__(self, *args, **kwargs):
         """
