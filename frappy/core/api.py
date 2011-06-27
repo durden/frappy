@@ -80,8 +80,7 @@ class APICall(object):
             self.post_actions = []
 
         self.response = None
-        self.request_headers = {}
-        self.response_headers = None
+        self.headers = {'request': None, 'response': None}
 
         self.method = "GET"
         self.body = None
@@ -157,7 +156,7 @@ class APICall(object):
         """
 
         if self.auth:
-            self.request_headers.update(self.auth.generate_headers())
+            self.headers['request'].update(self.auth.generate_headers())
             self.arg_data = self.auth.encode_params(self.uri, self.method,
                                                     kwargs)
 
@@ -173,13 +172,13 @@ class APICall(object):
         """
 
         self._build_uri(*args, **kwargs)
-        req = requests.get(self.uri, headers=self.request_headers)
+        req = requests.get(self.uri, headers=self.headers['request'])
         return self._handle_response(req, self.arg_data)
 
     def _handle_response(self, req, arg_data):
         """Verify response code and format data accordingly"""
 
-        self.response_headers = req.headers
+        self.headers['response'] = req.headers
 
         # Roll over request to prepare for new one
         self._reset_uri()
@@ -215,7 +214,7 @@ class APICall(object):
         """
 
         try:
-            return int(self.response_headers['x-ratelimit-remaining'])
+            return int(self.headers['response']['x-ratelimit-remaining'])
         except KeyError:
             return 0
 
@@ -226,7 +225,7 @@ class APICall(object):
         """
 
         try:
-            return int(self.response_headers['x-ratelimit-limit'])
+            return int(self.headers['response']['x-ratelimit-limit'])
         except KeyError:
             return 0
 
@@ -237,6 +236,6 @@ class APICall(object):
         """
 
         try:
-            return int(self.response_headers['x-ratelimit-reset'])
+            return int(self.headers['response']['x-ratelimit-reset'])
         except KeyError:
             return 0

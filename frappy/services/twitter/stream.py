@@ -66,11 +66,9 @@ class TwitterStream(Twitter):
         # consistent with other supported services
         self.requested_uri = self.uri
 
-        print 'here'
         return self._handle_response(None, self.arg_data)
 
     def _handle_response(self, req, arg_data):
-        req = urllib2.Request(self.uri, self.body, self.request_headers)
+        req = urllib2.Request(self.uri, self.body, self.headers['request'])
         response = urllib2.urlopen(req)
-        print 'handline'
         return iter(TwitterJSONIter(response, arg_data))
