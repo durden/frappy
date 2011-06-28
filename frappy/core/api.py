@@ -86,7 +86,6 @@ class APICall(object):
         self.response = None
         self.headers = {'request': {}, 'response': {}}
 
-        self.body = None
         self.arg_data = ""
         self.missing_attrs = ()
 
@@ -160,8 +159,7 @@ class APICall(object):
 
     def _handle_auth(self, **kwargs):
         """
-        Attach requested authentication to request and encoded body and
-        parameters
+        Attach requested authentication to request and encoded parameters
         """
 
         if self.auth is None:
@@ -169,20 +167,10 @@ class APICall(object):
 
         self.headers['request'].clear()
         self.headers['response'].clear()
-        method = "GET"
-
-        for action in self.post_actions:
-            if self.uri.find(action) > -1:
-                method = "POST"
-                break
 
         self.headers['request'].update(self.auth.generate_headers())
-        self.arg_data = self.auth.encode_params(self.uri, method, kwargs)
-
-        if method == 'GET':
-            self.uri += '?' + self.arg_data
-        else:
-            self.body = self.arg_data.encode('utf8')
+        self.arg_data = self.auth.encode_params(self.uri,
+                                            self._get_http_method(), kwargs)
 
     def __call__(self, *args, **kwargs):
         """
@@ -198,8 +186,33 @@ class APICall(object):
         # Append any authentication specified to request
         self._handle_auth(**kwargs)
 
-        resp = requests.get(self.uri, headers=self.headers['request'])
+        resp = self._send_request()
+
         return self._handle_response(resp, self.arg_data)
+
+    def _get_http_method(self):
+        """Get HTTP method current self.uri needs to use"""
+
+        method = "GET"
+
+        for action in self.post_actions:
+            if self.uri.find(action) > -1:
+                method = "POST"
+                break
+
+        return method
+
+    def _send_request(self):
+        """Send request to self.uri"""
+
+        if self._get_http_method() == 'GET':
+            self.uri += '?' + self.arg_data
+            resp = requests.get(self.uri, headers=self.headers['request'])
+        else:
+            resp = requests.post(self.uri, data=self.arg_data,
+                                 headers=self.headers['request'])
+
+        return resp
 
     def _handle_response(self, resp, arg_data):
         """Verify response code and format data accordingly"""

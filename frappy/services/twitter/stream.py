@@ -6,10 +6,11 @@ import urllib2
 import json
 
 from frappy.core.api import APIHTTPError, DefaultVersion
-from twitter import Twitter
+from frappy.services.twitter.twitter import Twitter
 
 
 class TwitterJSONIter(object):
+    """Iterable JSON object"""
 
     def __init__(self, req, arg_data):
         self.decoder = json.JSONDecoder()
@@ -28,7 +29,7 @@ class TwitterJSONIter(object):
             except ValueError as e:
                 continue
             except urllib2.HTTPError as e:
-                raise APIHTTPError(e, self.uri, self.req_format, self.arg_data)
+                raise APIHTTPError(e, self.req.get_full_url(), self.arg_data)
 
 
 class TwitterStream(Twitter):
@@ -72,9 +73,14 @@ class TwitterStream(Twitter):
         # consistent with other supported services
         self.requested_uri = self.uri
 
-        return self._handle_response(None, self.arg_data)
+        resp = self._send_request()
 
-    def _handle_response(self, req, arg_data):
-        req = urllib2.Request(self.uri, self.body, self.headers['request'])
-        response = urllib2.urlopen(req)
-        return iter(TwitterJSONIter(response, arg_data))
+        return self._handle_response(resp, self.arg_data)
+
+    def _send_request(self):
+        """Send request to self.uri"""
+        req = urllib2.Request(self.uri, self.arg_data, self.headers['request'])
+        return urllib2.urlopen(req)
+
+    def _handle_response(self, resp, arg_data):
+        return iter(TwitterJSONIter(resp, arg_data))
