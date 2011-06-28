@@ -84,6 +84,7 @@ class APICall(object):
         self.method = "GET"
         self.body = None
         self.arg_data = ""
+        self.missing_attrs = ()
 
         self.uriparts = uriparts
         if self.uriparts is None:
@@ -103,7 +104,7 @@ class APICall(object):
         <domain>/statuses/public_timeline.
         """
 
-        self.uriparts += (k,)
+        self.missing_attrs += (k,)
         return self
 
     def service_build_uri(self, **kwargs):
@@ -119,7 +120,9 @@ class APICall(object):
         """Build up the final uri for the request"""
 
         uriparts = []
-        for uripart in self.uriparts:
+        extra_uri = self.uriparts + self.missing_attrs
+
+        for uripart in extra_uri:
             # If this part matches a keyword argument, use the
             # supplied value otherwise, just use the part.
             uriparts.append(str(kwargs.pop(uripart, uripart)))
@@ -210,7 +213,7 @@ class APICall(object):
         # Save off the current uri request just for testing and inspection
         self.requested_uri = self.uri
         self.uri = ""
-        self.uriparts = ()
+        self.missing_attrs = ()
 
     @property
     def rate_limit_remaining(self):
