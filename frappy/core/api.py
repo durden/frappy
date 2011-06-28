@@ -111,23 +111,32 @@ class APICall(object):
         self.missing_attrs += (k,)
         return self
 
-    def service_build_uri(self, **kwargs):
+    def service_build_uri(self, *args, **kwargs):
         """
         Service specific build uri
 
         This method is meant to be overriden by child classes to have the last
         opportunity to verify self.uri and add additional elements to it, etc.
 
-        NOTE: Make sure to pop the keyword arguments off the list if you use
+        NOTE: Make sure to pop all arguments off the list if you use
         them otherwise they will be appended twice since all leftovers are
         eventually added to the request uri
-        """
-        return
 
-    def _build_uri(self, *args, **kwargs):
+        Also, don't forget to call this base method after doing service
+        specific alterations!
+        """
+
+        # Don't use join here b/c not all arguments are required to be strings
+        for arg in args:
+            self.uri += '/%s' % (arg)
+
+        return kwargs
+
+    def _build_uri(self, **kwargs):
         """
         Build uri for request with any missing attribute accesses that have
-        accumulated and any arguments or keyword arguments
+        accumulated and any arguments or keyword arguments and return any
+        leftover keyword arguments
         """
 
         uriparts = []
@@ -145,15 +154,9 @@ class APICall(object):
 
         self.uri += '/'.join(uriparts)
 
-        # Don't use join here b/c not all arguments are required to be strings
-        for arg in args:
-            self.uri += '/%s' % (arg)
-
-        # Wrapper for child classes to customize creation of the uri
-        self.service_build_uri(**kwargs)
-
-        # Append any authentication specified to request
-        self._handle_auth(**kwargs)
+        # Return leftover keyword arguments for service specific code to use,
+        # otherwise they'll just be appended at the end later
+        return kwargs
 
     def _handle_auth(self, **kwargs):
         """
@@ -187,7 +190,14 @@ class APICall(object):
         send off request
         """
 
-        self._build_uri(*args, **kwargs)
+        kwargs = self._build_uri(**kwargs)
+
+        # Wrapper for child classes to customize creation of the uri
+        kwargs = self.service_build_uri(*args, **kwargs)
+
+        # Append any authentication specified to request
+        self._handle_auth(**kwargs)
+
         resp = requests.get(self.uri, headers=self.headers['request'])
         return self._handle_response(resp, self.arg_data)
 

@@ -119,11 +119,14 @@ class Twitter(APICall):
             secure=secure, uriparts=uriparts, debug=debug,
             post_actions=twitter_globals.POST_ACTIONS)
 
-    def service_build_uri(self, **kwargs):
+    def service_build_uri(self, *args, **kwargs):
         """
         Complete creation of request uri by adding additional Twitter specific
         syntax, etc.
         """
+
+        # Append all extra arguments from *args
+        APICall.service_build_uri(self, *args, **kwargs)
 
         # If an id kwarg is present and there is no id to fill in in
         # the list of uriparts, assume the id goes at the end.
@@ -137,5 +140,7 @@ class Twitter(APICall):
             dot = "."
 
         self.uri += "%s%s" % (dot, self.req_format)
+
+        return kwargs
 
 __all__ = ["Twitter"]
