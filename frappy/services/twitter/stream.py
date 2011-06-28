@@ -28,8 +28,9 @@ class TwitterJSONIter(object):
                 yield self.buf
             except ValueError as e:
                 continue
-            except urllib2.HTTPError as e:
-                raise APIHTTPError(e, self.req.get_full_url(), self.arg_data)
+            except urllib2.HTTPError as err:
+                raise APIHTTPError(err.getcode(), self.req.get_full_url(),
+                                   self.arg_data)
 
 
 class TwitterStream(Twitter):
@@ -64,7 +65,7 @@ class TwitterStream(Twitter):
         kwargs = self.service_build_uri(*args, **kwargs)
 
         # Append any authentication specified to request
-        self._handle_auth(**kwargs)
+        arg_data = self._handle_auth(**kwargs)
 
         # Normally self.uri would be cleared between each __call__ to allow for
         # new requests and previous request location would be in requested_uri,
@@ -73,14 +74,17 @@ class TwitterStream(Twitter):
         # consistent with other supported services
         self.requested_uri = self.uri
 
-        resp = self._send_request()
+        resp = self._send_request(arg_data)
 
-        return self._handle_response(resp, self.arg_data)
+        return self._handle_response(resp, arg_data)
 
-    def _send_request(self):
+    def _send_request(self, arg_data):
         """Send request to self.uri"""
-        req = urllib2.Request(self.uri, self.arg_data, self.headers['request'])
-        return urllib2.urlopen(req)
+        try:
+            req = urllib2.Request(self.uri, arg_data, self.headers['request'])
+            return urllib2.urlopen(req)
+        except (urllib2.HTTPError, urllib2.URLError), err:
+            raise APIHTTPError(err.getcode(), req.get_full_url(), arg_data)
 
     def _handle_response(self, resp, arg_data):
         return iter(TwitterJSONIter(resp, arg_data))

@@ -32,13 +32,12 @@ class APIHTTPError(APIError):
     general error interacting with the API.
     """
 
-    def __init__(self, status_code, uri, req_format, uriparts):
+    def __init__(self, status_code, uri, params):
         """Initalize error object"""
 
         self.status_code = status_code
         self.uri = uri
-        self.req_format = req_format
-        self.uriparts = uriparts
+        self.params = params
 
         APIError.__init__(self)
 
@@ -47,7 +46,7 @@ class APIHTTPError(APIError):
 
         return (
             "API sent status %i for URL: %s using parameters: "
-            "(%s)" % (self.status_code, self.uri, self.uriparts))
+            "(%s)" % (self.status_code, self.uri, self.params))
 
 
 class APICall(object):
@@ -86,7 +85,6 @@ class APICall(object):
         self.response = None
         self.headers = {'request': {}, 'response': {}}
 
-        self.arg_data = ""
         self.missing_attrs = ()
 
         self.uriparts = uriparts
@@ -159,7 +157,8 @@ class APICall(object):
 
     def _handle_auth(self, **kwargs):
         """
-        Attach requested authentication to request and encoded parameters
+        Setup authentication in headers and return properly encoded request
+        data
         """
 
         if self.auth is None:
@@ -169,8 +168,8 @@ class APICall(object):
         self.headers['response'].clear()
 
         self.headers['request'].update(self.auth.generate_headers())
-        self.arg_data = self.auth.encode_params(self.uri,
-                                            self._get_http_method(), kwargs)
+        return self.auth.encode_params(self.uri, self._get_http_method(),
+                                       kwargs)
 
     def __call__(self, *args, **kwargs):
         """
@@ -184,11 +183,11 @@ class APICall(object):
         kwargs = self.service_build_uri(*args, **kwargs)
 
         # Append any authentication specified to request
-        self._handle_auth(**kwargs)
+        arg_data = self._handle_auth(**kwargs)
 
-        resp = self._send_request()
+        resp = self._send_request(arg_data)
 
-        return self._handle_response(resp, self.arg_data)
+        return self._handle_response(resp, arg_data)
 
     def _get_http_method(self):
         """Get HTTP method current self.uri needs to use"""
@@ -202,14 +201,14 @@ class APICall(object):
 
         return method
 
-    def _send_request(self):
-        """Send request to self.uri"""
+    def _send_request(self, arg_data):
+        """Send request to self.uri with associated (encoded) data"""
 
         if self._get_http_method() == 'GET':
-            self.uri += '?' + self.arg_data
+            self.uri += '?' + arg_data
             resp = requests.get(self.uri, headers=self.headers['request'])
         else:
-            resp = requests.post(self.uri, data=self.arg_data,
+            resp = requests.post(self.uri, data=arg_data,
                                  headers=self.headers['request'])
 
         return resp
@@ -230,7 +229,7 @@ class APICall(object):
                 return self
             else:
                 raise APIHTTPError(resp.status_code, self.requested_uri,
-                                   self.req_format, arg_data)
+                                   arg_data)
 
         if "json" == self.req_format:
             self.response = json.loads(resp.content.decode('utf8'))
