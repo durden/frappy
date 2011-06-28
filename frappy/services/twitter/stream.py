@@ -57,7 +57,13 @@ class TwitterStream(Twitter):
         send off request
         """
 
-        self._build_uri(*args, **kwargs)
+        kwargs = self._build_uri(**kwargs)
+
+        # Wrapper for child classes to customize creation of the uri
+        kwargs = self.service_build_uri(*args, **kwargs)
+
+        # Append any authentication specified to request
+        self._handle_auth(**kwargs)
 
         # Normally self.uri would be cleared between each __call__ to allow for
         # new requests and previous request location would be in requested_uri,
