@@ -46,9 +46,8 @@ class APIHTTPError(APIError):
         """Stringify error"""
 
         return (
-            "API sent status %i for URL: %s.%s using parameters: "
-            "(%s)" % (self.status_code, self.uri, self.req_format,
-                      self.uriparts))
+            "API sent status %i for URL: %s using parameters: "
+            "(%s)" % (self.status_code, self.uri, self.uriparts))
 
 
 class APICall(object):
