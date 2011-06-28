@@ -69,10 +69,15 @@ class APICall(object):
             self.auth = NoAuth()
 
         self.req_format = req_format
-        self.domain = domain
-        self.uri = ""
+
+        secure_str = ''
+        if secure:
+            secure_str = 's'
+
+        self.base_uri = "http%s://%s/" % (secure_str, domain)
+        self.uri = self.base_uri
+
         self.requested_uri = ""
-        self.secure = secure
         self.post_actions = post_actions
 
         if self.post_actions is None:
@@ -131,12 +136,6 @@ class APICall(object):
         # Don't use join here b/c not all arguments are required to be strings
         for arg in args:
             self.uri += '/%s' % (arg)
-
-        secure_str = ''
-        if self.secure:
-            secure_str = 's'
-
-        self.uri = "http%s://%s/%s" % (secure_str, self.domain, self.uri)
 
         # Wrapper for child classes to customize creation of the uri
         self.service_build_uri(**kwargs)
@@ -210,7 +209,7 @@ class APICall(object):
 
         # Save off the current uri request just for testing and inspection
         self.requested_uri = self.uri
-        self.uri = ""
+        self.uri = self.base_uri
         self.missing_attrs = ()
 
     @property
