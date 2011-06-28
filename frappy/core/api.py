@@ -117,18 +117,30 @@ class APICall(object):
 
         This method is meant to be overriden by child classes to have the last
         opportunity to verify self.uri and add additional elements to it, etc.
+
+        NOTE: Make sure to pop the keyword arguments off the list if you use
+        them otherwise they will be appended twice since all leftovers are
+        eventually added to the request uri
         """
         return
 
     def _build_uri(self, *args, **kwargs):
-        """Build up the final uri for the request"""
+        """
+        Build uri for request with any missing attribute accesses that have
+        accumulated and any arguments or keyword arguments
+        """
 
         uriparts = []
         extra_uri = self.uriparts + self.missing_attrs
 
+        # Search all missing attributes for matching keyword argument
         for uripart in extra_uri:
-            # If this part matches a keyword argument, use the
-            # supplied value otherwise, just use the part.
+            # If keyword argument matches missing attribute use the value of
+            # keyword argument, otherwise just append the missing attribute
+            # This allows for putting keyword arguments in the middle of a uri
+            # string instead of the at end
+            # For example:
+            # myobject.test.id.details(id=1) maps to domain/test/1/details/
             uriparts.append(str(kwargs.pop(uripart, uripart)))
 
         self.uri += '/'.join(uriparts)
