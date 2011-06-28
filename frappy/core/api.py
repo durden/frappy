@@ -81,7 +81,6 @@ class APICall(object):
         self.response = None
         self.headers = {'request': {}, 'response': {}}
 
-        self.method = "GET"
         self.body = None
         self.arg_data = ""
         self.missing_attrs = ()
@@ -142,13 +141,7 @@ class APICall(object):
         # Wrapper for child classes to customize creation of the uri
         self.service_build_uri(**kwargs)
 
-        # method is GET by default
-        for action in self.post_actions:
-            if self.uri.find(action) > -1:
-                self.method = "POST"
-                break
-
-       # Append any authentication specified to request
+        # Append any authentication specified to request
         self._handle_auth(**kwargs)
 
     def _handle_auth(self, **kwargs):
@@ -162,12 +155,17 @@ class APICall(object):
 
         self.headers['request'].clear()
         self.headers['response'].clear()
+        method = "GET"
+
+        for action in self.post_actions:
+            if self.uri.find(action) > -1:
+                method = "POST"
+                break
 
         self.headers['request'].update(self.auth.generate_headers())
-        self.arg_data = self.auth.encode_params(self.uri, self.method,
-                                                kwargs)
+        self.arg_data = self.auth.encode_params(self.uri, method, kwargs)
 
-        if self.method == 'GET':
+        if method == 'GET':
             self.uri += '?' + self.arg_data
         else:
             self.body = self.arg_data.encode('utf8')
