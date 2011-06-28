@@ -157,6 +157,9 @@ class APICall(object):
         if self.auth is None:
             raise ValueError('Authentication is None')
 
+        self.headers['request'].clear()
+        self.headers['response'].clear()
+
         self.headers['request'].update(self.auth.generate_headers())
         self.arg_data = self.auth.encode_params(self.uri, self.method,
                                                 kwargs)
