@@ -195,7 +195,7 @@ class APICall(object):
         method = "GET"
 
         for action in self.post_actions:
-            if self.uri.find(action) > -1:
+            if self.uri.startswith(action):
                 method = "POST"
                 break
 
