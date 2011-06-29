@@ -42,7 +42,7 @@ class Github(APICall):
         data
         """
 
-        arg_data = APICall._handle_auth(self, kwargs)
+        arg_data = APICall._handle_auth(self, **kwargs)
 
         # GET requests are just added to the uri as normal, but POST pass JSON
         if self._get_http_method() == 'GET':
