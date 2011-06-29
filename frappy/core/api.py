@@ -221,7 +221,8 @@ class APICall(object):
         # Roll over request to prepare for new one
         self._reset_uri()
 
-        if resp.status_code != 200:
+        # 200 - ok, 201 - created
+        if resp.status_code != 200 and resp.status_code != 201:
             if (resp.status_code == 304):
                 return []
             # Allows for testing without Internet access
