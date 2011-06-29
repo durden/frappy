@@ -2,6 +2,11 @@
 Class to perform operations on the Github API
 """
 
+try:
+    import json
+except ImportError:
+    import simplejson as json
+
 from frappy.core.api import APICall
 
 
@@ -29,8 +34,21 @@ class Github(APICall):
                  secure=True, auth=None, debug=False):
 
         APICall.__init__(self, auth=auth, req_format=req_format, domain=domain,
-                         secure=secure, debug=debug)
+                         secure=secure, post_actions=['gists'], debug=debug)
 
+    def _handle_auth(self, **kwargs):
+        """
+        Setup authentication in headers and return properly encoded request
+        data
+        """
+
+        arg_data = APICall._handle_auth(self, kwargs)
+
+        # GET requests are just added to the uri as normal, but POST pass JSON
+        if self._get_http_method() == 'GET':
+            return arg_data
+        else:
+            return json.dumps(kwargs)
 
 if __name__ == "__main__":
     import doctest
