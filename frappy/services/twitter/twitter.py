@@ -10,6 +10,14 @@ class Twitter(APICall):
     Get RESTful data by accessing members of this class. The result
     is decoded python objects (lists and dicts).
 
+    >>> from frappy.services.twitter.twitter import Twitter
+    >>> t = Twitter()
+    >>> statuses = t.statuses.public_timeline()
+    >>> '200 OK' == statuses.headers['response']['status']
+    True
+    >>> statuses.requested_uri
+    'https://api.twitter.com/1/statuses/public_timeline.json?'
+
     The Twitter API is documented here:
 
       http://dev.twitter.com/doc
@@ -144,5 +152,10 @@ class Twitter(APICall):
         self.uri += "%s%s" % (dot, self.req_format)
 
         return kwargs
+
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
 
 __all__ = ["Twitter"]
