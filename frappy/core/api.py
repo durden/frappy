@@ -195,7 +195,7 @@ class APICall(object):
         method = "GET"
 
         for action in self.post_actions:
-            if self.uri.startswith(action):
+            if action in self.missing_attrs:
                 method = "POST"
                 break
 
