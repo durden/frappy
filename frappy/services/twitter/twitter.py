@@ -20,6 +20,9 @@ class Twitter(APICall):
       twitter = Twitter(
           auth=OAuth(token, token_key, con_secret, con_secret_key)))
 
+      # Any call can accept a keyword argument 'method' to force the request
+      # method to POST (default) is GET
+
       # Get the public timeline
       twitter.statuses.public_timeline()
 
@@ -116,8 +119,7 @@ class Twitter(APICall):
 
         APICall.__init__(
             self, auth=auth, req_format=req_format, domain=domain,
-            secure=secure, uriparts=uriparts, debug=debug,
-            post_actions=twitter_globals.POST_ACTIONS)
+            secure=secure, uriparts=uriparts, debug=debug)
 
     def service_build_uri(self, *args, **kwargs):
         """

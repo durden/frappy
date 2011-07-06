@@ -17,7 +17,8 @@ from frappy.core.api import APICall
 
 class Github(APICall):
     """
-    Tiny wrapper around Github API
+    Tiny wrapper around Github API (pass method=<method>) to any call to alter
+    request method
 
     >>> from frappy.services.github import Github
     >>> g = Github()
@@ -38,7 +39,7 @@ class Github(APICall):
                  secure=True, auth=None, debug=False):
 
         APICall.__init__(self, auth=auth, req_format=req_format, domain=domain,
-                         secure=secure, post_actions=['gists'], debug=debug)
+                         secure=secure, debug=debug)
 
     def _handle_auth(self, **kwargs):
         """
@@ -49,7 +50,7 @@ class Github(APICall):
         arg_data = APICall._handle_auth(self, **kwargs)
 
         # GET requests are just added to the uri as normal, but POST pass JSON
-        if self._get_http_method() == 'GET':
+        if self.method == 'GET':
             return arg_data
         else:
             return json.dumps(kwargs)

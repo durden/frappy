@@ -59,7 +59,7 @@ class APICall(object):
     """
 
     def __init__(self, auth, req_format, domain, uriparts=None, secure=True,
-                 post_actions=None, debug=False):
+                 debug=False):
 
         """Initialize call API object"""
 
@@ -77,10 +77,7 @@ class APICall(object):
         self.uri = self.base_uri
 
         self.requested_uri = ""
-        self.post_actions = post_actions
-
-        if self.post_actions is None:
-            self.post_actions = []
+        self.method = "GET"
 
         self.response = None
         self.headers = {'request': {}, 'response': {}}
@@ -168,8 +165,11 @@ class APICall(object):
         self.headers['response'].clear()
 
         self.headers['request'].update(self.auth.generate_headers())
-        return self.auth.encode_params(self.uri, self._get_http_method(),
-                                       kwargs)
+        return self.auth.encode_params(self.uri, self.method, kwargs)
+
+    def _set_request_method(self, **kwargs):
+        """Set request method for response by passing in 'method' kwarg"""
+        self.method = kwargs.pop('method', 'GET')
 
     def __call__(self, *args, **kwargs):
         """
@@ -182,6 +182,8 @@ class APICall(object):
         # Wrapper for child classes to customize creation of the uri
         kwargs = self.service_build_uri(*args, **kwargs)
 
+        self._set_request_method(**kwargs)
+
         # Append any authentication specified to request
         arg_data = self._handle_auth(**kwargs)
 
@@ -189,22 +191,10 @@ class APICall(object):
 
         return self._handle_response(resp, arg_data)
 
-    def _get_http_method(self):
-        """Get HTTP method current self.uri needs to use"""
-
-        method = "GET"
-
-        for action in self.post_actions:
-            if action in self.missing_attrs:
-                method = "POST"
-                break
-
-        return method
-
     def _send_request(self, arg_data):
         """Send request to self.uri with associated (encoded) data"""
 
-        if self._get_http_method() == 'GET':
+        if self.method == 'GET':
             self.uri += '?' + arg_data
             resp = requests.get(self.uri, headers=self.headers['request'])
         else:
