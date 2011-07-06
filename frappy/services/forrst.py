@@ -11,8 +11,7 @@ class Forrst(APICall):
     """
 
     def __init__(self, req_format="json", domain="forrst.com/api",
-                 secure=False, auth=None, api_version=DefaultVersion,
-                 debug=False):
+                 secure=False, auth=None, api_version=DefaultVersion):
 
         if api_version is DefaultVersion:
             api_version = 'v2'
@@ -22,7 +21,7 @@ class Forrst(APICall):
             uriparts += (str(api_version),)
 
         APICall.__init__(self, auth=auth, req_format=req_format, domain=domain,
-                         secure=secure, uriparts=uriparts, debug=debug)
+                         secure=secure, uriparts=uriparts)
 
 
 if __name__ == "__main__":

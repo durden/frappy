@@ -36,10 +36,10 @@ class Github(APICall):
     """
 
     def __init__(self, req_format="json", domain="api.github.com",
-                 secure=True, auth=None, debug=False):
+                 secure=True, auth=None):
 
         APICall.__init__(self, auth=auth, req_format=req_format, domain=domain,
-                         secure=secure, debug=debug)
+                         secure=secure)
 
     def _handle_auth(self, **kwargs):
         """

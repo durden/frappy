@@ -87,10 +87,8 @@ class Twitter(APICall):
       of XML.
 
     """
-    def __init__(
-        self, req_format="json",
-        domain="api.twitter.com", secure=True, auth=None,
-        api_version=DefaultVersion, debug=False):
+    def __init__(self, req_format="json", domain="api.twitter.com",
+                secure=True, auth=None, api_version=DefaultVersion):
         """
         Create a new twitter API connector.
 
@@ -127,7 +125,7 @@ class Twitter(APICall):
 
         APICall.__init__(
             self, auth=auth, req_format=req_format, domain=domain,
-            secure=secure, uriparts=uriparts, debug=debug)
+            secure=secure, uriparts=uriparts)
 
     def service_build_uri(self, *args, **kwargs):
         """
