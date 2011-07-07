@@ -16,7 +16,7 @@ class Twitter(APICall):
     >>> '200 OK' == statuses.headers['response']['status']
     True
     >>> statuses.requested_uri
-    'https://api.twitter.com/1/statuses/public_timeline.json?'
+    'https://api.twitter.com/1/statuses/public_timeline.json'
 
     The Twitter API is documented here:
 

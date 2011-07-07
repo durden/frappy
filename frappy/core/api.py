@@ -76,7 +76,7 @@ class APICall(object):
         self.uri = self.base_uri
 
         self.requested_uri = ""
-        self.method = "GET"
+        self.method = "get"
 
         self.response = None
         self.headers = {'request': {}, 'response': {}}
@@ -147,7 +147,7 @@ class APICall(object):
         # otherwise they'll just be appended at the end later
         return kwargs
 
-    def _handle_auth(self, **kwargs):
+    def _handle_auth(self):
         """
         Setup authentication in headers and return properly encoded request
         data
@@ -160,11 +160,10 @@ class APICall(object):
         self.headers['response'].clear()
 
         self.headers['request'].update(self.auth.generate_headers())
-        return self.auth.encode_params(self.uri, self.method, kwargs)
 
     def _set_request_method(self, **kwargs):
         """Set request method for response by passing in 'method' kwarg"""
-        self.method = kwargs.pop('method', 'GET')
+        self.method = kwargs.pop('method', 'get')
 
     def __call__(self, *args, **kwargs):
         """
@@ -180,25 +179,51 @@ class APICall(object):
         self._set_request_method(**kwargs)
 
         # Append any authentication specified to request
-        arg_data = self._handle_auth(**kwargs)
+        self._handle_auth()
 
-        resp = self._send_request(arg_data)
+        resp = self._send_request(**kwargs)
 
-        return self._handle_response(resp, arg_data)
+        return self._handle_response(resp)
 
-    def _send_request(self, arg_data):
+    def _prepare_request_params(self, **kwargs):
+        """Handle encoding or any special processing of request parameters"""
+
+        return kwargs
+
+    def request_method_is_safe(self):
+        """
+        Determines if request is 'safe' in REST terminology (aka doesn't
+        change data, just requests it)
+        """
+        return self.method == 'get' or self.method == 'head'
+
+    def _send_request(self, **kwargs):
         """Send request to self.uri with associated (encoded) data"""
 
-        if self.method == 'GET':
-            self.uri += '?' + arg_data
-            resp = requests.get(self.uri, headers=self.headers['request'])
+        # Make it lowercase to b/c the methods in requests module are lowercase
+        self.method = self.method.lower()
+        method_call = getattr(requests, self.method, None)
+
+        if method_call is None:
+            raise AttributeError(
+                            '%s not a supported HTTP method' % (self.method))
+
+        arg_data = self._prepare_request_params(**kwargs)
+
+        # 'get' and 'head' take params to put in query string
+        if self.request_method_is_safe():
+            resp = method_call(self.uri, params=arg_data,
+                               headers=self.headers['request'])
+
+            # Update uri with full location (including query params encoded)
+            self.uri = resp.url
         else:
-            resp = requests.post(self.uri, data=arg_data,
-                                 headers=self.headers['request'])
+            resp = method_call(self.uri, data=arg_data,
+                               headers=self.headers['request'])
 
         return resp
 
-    def _handle_response(self, resp, arg_data):
+    def _handle_response(self, resp):
         """Verify response code and format data accordingly"""
 
         self.headers['response'] = resp.headers
@@ -211,8 +236,7 @@ class APICall(object):
             if (resp.status_code == 304):
                 return []
             else:
-                raise APIHTTPError(resp.status_code, self.requested_uri,
-                                   arg_data)
+                raise APIHTTPError(resp.status_code, self.requested_uri)
 
         if "json" == self.req_format:
             self.response = json.loads(resp.content.decode('utf8'))

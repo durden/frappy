@@ -41,19 +41,14 @@ class Github(APICall):
         APICall.__init__(self, auth=auth, req_format=req_format, domain=domain,
                          secure=secure)
 
-    def _handle_auth(self, **kwargs):
-        """
-        Setup authentication in headers and return properly encoded request
-        data
-        """
+    def _prepare_request_params(self, **kwargs):
+        """Encode specific request data as json"""
 
-        arg_data = APICall._handle_auth(self, **kwargs)
+        # get requests are just added to the uri as normal, but post pass JSON
+        if self.request_method_is_safe():
+            return kwargs
 
-        # GET requests are just added to the uri as normal, but POST pass JSON
-        if self.method == 'GET':
-            return arg_data
-        else:
-            return json.dumps(kwargs)
+        return json.dumps(kwargs)
 
 if __name__ == "__main__":
     import doctest
