@@ -20,6 +20,35 @@ class Github(APICall):
     Tiny wrapper around Github API (pass method=<method>) to any call to alter
     request method
 
+    Examples
+
+    Create authenticated API object
+    -------------------------------
+
+    from frappy.services.github import Github
+    from frappy.core.auth import UserPassAuth
+
+    auth = UserPassAuth('joe', 'password')
+    g = Github(auth=auth)
+
+    Edit a gist
+    -----------
+
+    # Requires authenticated API object
+
+    gist = g.gists('1066339', files={'test.txt':
+                {'content': 'This is yet another updated test from frappy'}},
+                method='patch')
+
+    Create a gist
+    -------------
+
+    # Requires authenticated API object
+
+    x = g.gists(description='testing', public='true',
+                files={'test.txt': {'content': 'This is a test from frappy'}})
+
+
     >>> from frappy.services.github import Github
     >>> g = Github()
     >>> commit = \
