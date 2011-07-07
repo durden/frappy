@@ -16,12 +16,6 @@ class Auth(object):
     ABC for Authenticator objects.
     """
 
-    def encode_params(self, base_url, method, params):
-        """Encodes parameters for a request suitable for including in a URL
-        or POST body.  This method may also add new params to the request
-        if required by the authentication scheme in use."""
-        raise NotImplementedError()
-
     def generate_headers(self):
         """Generates headers which should be added to the request if required
         by the authentication scheme in use."""
@@ -37,11 +31,6 @@ class UserPassAuth(Auth):
         self.username = username
         self.password = password
 
-    def encode_params(self, base_url, method, params):
-        # We could consider automatically converting unicode to utf8 strings
-        # before encoding...
-        return urllib_parse.urlencode(params)
-
     def generate_headers(self):
         return {b"Authorization":
                 b"Basic " + encodebytes(("%s:%s" % (self.username, self.password))
@@ -54,9 +43,6 @@ class NoAuth(Auth):
     """
     def __init__(self):
         pass
-
-    def encode_params(self, base_url, method, params):
-        return urllib_parse.urlencode(params)
 
     def generate_headers(self):
         return {}
