@@ -1,6 +1,8 @@
+"""
+Simple Twitter API wrapper
+"""
 
 from frappy.core.api import APICall, DefaultVersion
-import twitter_globals
 
 
 class Twitter(APICall):
