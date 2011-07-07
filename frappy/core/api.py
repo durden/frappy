@@ -32,21 +32,19 @@ class APIHTTPError(APIError):
     general error interacting with the API.
     """
 
-    def __init__(self, status_code, uri, params):
+    def __init__(self, status_code, uri):
         """Initalize error object"""
 
         self.status_code = status_code
         self.uri = uri
-        self.params = params
 
         APIError.__init__(self)
 
     def __str__(self):
         """Stringify error"""
 
-        return (
-            "API sent status %i for URL: %s using parameters: "
-            "(%s)" % (self.status_code, self.uri, self.params))
+        return ("API sent status %i for URL: %s " % (self.status_code,
+                                                    self.uri))
 
 
 class APICall(object):
