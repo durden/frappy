@@ -12,11 +12,6 @@ except ImportError:
     import simplejson as json
 
 
-class DefaultVersion(object):
-    """Default version class"""
-    pass
-
-
 class APIError(Exception):
     """
     Base Exception thrown by the APICall object when there is a
@@ -56,7 +51,7 @@ class APICall(object):
     and provide a basic __init__ method.
     """
 
-    def __init__(self, auth, req_format, domain, uriparts=None, secure=True):
+    def __init__(self, auth, req_format, domain, secure=True):
 
         """Initialize call API object"""
 
@@ -80,10 +75,6 @@ class APICall(object):
         self.headers = {'request': {}, 'response': {}}
 
         self.missing_attrs = ()
-
-        self.uriparts = uriparts
-        if self.uriparts is None:
-            self.uriparts = ()
 
     def __getattr__(self, k):
         """
@@ -127,10 +118,9 @@ class APICall(object):
         """
 
         uriparts = []
-        extra_uri = self.uriparts + self.missing_attrs
 
         # Search all missing attributes for matching keyword argument
-        for uripart in extra_uri:
+        for uripart in self.missing_attrs:
             # If keyword argument matches missing attribute use the value of
             # keyword argument, otherwise just append the missing attribute
             # This allows for putting keyword arguments in the middle of a uri

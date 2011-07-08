@@ -2,7 +2,7 @@
 Class to perform operations on the Forrst API
 """
 
-from frappy.core.api import APICall, DefaultVersion
+from frappy.core.api import APICall
 
 
 class Forrst(APICall):
@@ -35,17 +35,12 @@ class Forrst(APICall):
     """
 
     def __init__(self, req_format="json", domain="forrst.com/api",
-                 secure=False, auth=None, api_version=DefaultVersion):
+                 secure=False, auth=None, api_version='v2'):
 
-        if api_version is DefaultVersion:
-            api_version = 'v2'
-
-        uriparts = ()
-        if api_version:
-            uriparts += (str(api_version),)
+        domain += "/%s" % (api_version)
 
         APICall.__init__(self, auth=auth, req_format=req_format, domain=domain,
-                         secure=secure, uriparts=uriparts)
+                         secure=secure)
 
 
 if __name__ == "__main__":

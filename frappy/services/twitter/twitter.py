@@ -2,7 +2,7 @@
 Simple Twitter API wrapper
 """
 
-from frappy.core.api import APICall, DefaultVersion
+from frappy.core.api import APICall
 
 
 class Twitter(APICall):
@@ -90,7 +90,7 @@ class Twitter(APICall):
 
     """
     def __init__(self, req_format="json", domain="api.twitter.com",
-                secure=True, auth=None, api_version=DefaultVersion):
+                secure=True, auth=None, api_version='1'):
         """
         Create a new twitter API connector.
 
@@ -109,25 +109,21 @@ class Twitter(APICall):
         If `secure` is False you will connect with HTTP instead of
         HTTPS.
 
-        `api_version` is used to set the base uri. By default it's
-        '1'. If you are using "search.twitter.com" set this to None.
+        `api_version` is used to set the base uri. By default it's '1'.
         """
         if (req_format not in ("json", "xml", "")):
             raise ValueError("Unknown data format '%s'" % (req_format))
 
-        if api_version is DefaultVersion:
+        if api_version is 1:
             if domain == 'api.twitter.com' or domain == 'stream.twitter.com':
                 api_version = '1'
             else:
                 api_version = None
 
-        uriparts = ()
-        if api_version:
-            uriparts += (str(api_version),)
+        domain += "/%s" % (api_version)
 
-        APICall.__init__(
-            self, auth=auth, req_format=req_format, domain=domain,
-            secure=secure, uriparts=uriparts)
+        APICall.__init__(self, auth=auth, req_format=req_format, domain=domain,
+                        secure=secure)
 
     def service_build_uri(self, *args, **kwargs):
         """
