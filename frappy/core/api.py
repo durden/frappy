@@ -12,16 +12,8 @@ except ImportError:
     import simplejson as json
 
 
-class APIError(Exception):
-    """
-    Base Exception thrown by the APICall object when there is a
-    general error interacting with the API.
-    """
 
-    pass
-
-
-class APIHTTPError(APIError):
+class APIHTTPError(Exception):
     """
     Base Exception thrown by the APICall object when there is a
     general error interacting with the API.
