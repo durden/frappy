@@ -9,12 +9,12 @@ from frappy.services.twitter.twitter import Twitter
 from frappy.services.twitter.cmdline import CONSUMER_KEY, CONSUMER_SECRET
 
 from frappy.core.auth import NoAuth
-from frappy.core.oauth import OAuth, read_token_file
+from frappy.core.oauth import OAuth
 
 noauth = NoAuth()
 
 # Open oauth_creds file in this directory and create oauth client using
-oauth = OAuth(*read_token_file(os.path.join(
+oauth = OAuth(*OAuth.read_token_file(os.path.join(
                 os.path.dirname(os.path.abspath(__file__)), 'oauth_creds'))
                 + (CONSUMER_KEY, CONSUMER_SECRET))
 

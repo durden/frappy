@@ -10,15 +10,16 @@ except ImportError:
 from frappy.core.api import APICall
 
 
-# NOTE: When dealing with the SHA1 for commits make sure to use the string
-#       syntax instead of method calls b/c SHA1 can start with numbers, which
-#       results in invalid syntax.  See below for examples.
-
 
 class Github(APICall):
     """
     Tiny wrapper around Github API (pass method=<method>) to any call to alter
     request method
+
+    Note when dealing with the SHA1 for commits make sure to use the string
+    syntax instead of method calls b/c SHA1 can start with numbers, which
+    results in invalid syntax.  See below for examples.
+
 
     Examples
 

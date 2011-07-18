@@ -60,7 +60,7 @@ import os
 import os.path
 
 from .api import Twitter, TwitterError
-from .oauth import OAuth, read_token_file
+from .oauth import OAuth
 from .oauth_dance import oauth_dance
 from .util import htmlentitydecode
 
@@ -147,7 +147,7 @@ class TwitterBot(object):
         oauth_file = self.config.get('twitter', 'oauth_token_file')
         if not os.path.exists(oauth_file):
             oauth_dance("IRC Bot", CONSUMER_KEY, CONSUMER_SECRET, oauth_file)
-        oauth_token, oauth_secret = read_token_file(oauth_file)
+        oauth_token, oauth_secret = OAuth.read_token_file(oauth_file)
 
         self.twitter = Twitter(
             auth=OAuth(

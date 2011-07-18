@@ -5,7 +5,7 @@ import webbrowser
 import time
 
 from frappy.services.twitter.twitter import Twitter
-from frappy.core.oauth import OAuth, write_token_file
+from frappy.core.oauth import OAuth
 
 try:
     _input = raw_input
@@ -64,7 +64,7 @@ your PIN:
     oauth_token, oauth_token_secret = parse_oauth_tokens(
         twitter.oauth.access_token(oauth_verifier=oauth_verifier))
     if token_filename:
-        write_token_file(
+        OAuth.write_token_file(
             token_filename, oauth_token, oauth_token_secret)
         print()
         print("That's it! Your authorization keys have been written to %s." % (

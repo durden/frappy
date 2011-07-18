@@ -88,7 +88,7 @@ from .twitter import Twitter
 from .oauth_dance import oauth_dance
 
 from frappy.core.api import APIError
-from frappy.core.oauth import OAuth, write_token_file, read_token_file
+from frappy.core.oauth import OAuth
 from frappy.core import ansi
 from frappy.core.util import smrt_input, printNicely
 
@@ -640,7 +640,7 @@ def main(args=sys.argv[1:]):
             "the Command-Line Tool", CONSUMER_KEY, CONSUMER_SECRET,
             options['oauth_filename'])
 
-    oauth_token, oauth_token_secret = read_token_file(oauth_filename)
+    oauth_token, oauth_token_secret = OAuth.read_token_file(oauth_filename)
 
     twitter = Twitter(
         auth=OAuth(
