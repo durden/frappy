@@ -8,8 +8,7 @@ from random import choice
 from frappy.services.twitter.twitter import Twitter
 from frappy.services.twitter.cmdline import CONSUMER_KEY, CONSUMER_SECRET
 
-from frappy.core.auth import NoAuth
-from frappy.core.oauth import OAuth
+from frappy.core.auth import NoAuth, OAuth
 
 noauth = NoAuth()
 

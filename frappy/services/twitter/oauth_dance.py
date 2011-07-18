@@ -5,7 +5,7 @@ import webbrowser
 import time
 
 from frappy.services.twitter.twitter import Twitter
-from frappy.core.oauth import OAuth
+from frappy.core.auth import OAuth
 
 try:
     _input = raw_input

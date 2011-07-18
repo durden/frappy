@@ -60,7 +60,7 @@ import os
 import os.path
 
 from .api import Twitter, TwitterError
-from .oauth import OAuth
+from .auth import OAuth
 from .oauth_dance import oauth_dance
 from .util import htmlentitydecode
 

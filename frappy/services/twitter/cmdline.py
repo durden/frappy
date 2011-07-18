@@ -88,7 +88,7 @@ from .twitter import Twitter
 from .oauth_dance import oauth_dance
 
 from frappy.core.api import APIError
-from frappy.core.oauth import OAuth
+from frappy.core.auth import OAuth
 from frappy.core import ansi
 from frappy.core.util import smrt_input, printNicely
 
