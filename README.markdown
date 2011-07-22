@@ -12,7 +12,7 @@ easy to extend to other web APIs.
 
 * Twitter
 * Github
-* Forrst (coming soon)
+* Forrst
 
 ###Contribution Guidelines
 
