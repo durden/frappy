@@ -8,5 +8,5 @@ setup(name='Frappy',
       author='Luke Lee',
       author_email='durdenmisc@gmail.com',
       url='http://github.com/durden/frappy',
-      packages=['frappy',]
+      packages=['frappy', 'frappy.services', 'frappy.core']
     )
