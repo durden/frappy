@@ -29,6 +29,7 @@ For example, the following github API call:
     https://api.github.com/users/
 
 Translates to a Python call like so:
+
     >>> from frappy.services.github import Github
     >>> g = Github()
     >>> r = g.users('octocat')
