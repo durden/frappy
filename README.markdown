@@ -34,6 +34,7 @@ Translates to a Python call like so:
     >>> g = Github()
     >>> r = g.users('octocat')
     >>> print r.repsonse
+    >>> print r.repsonse_json
 
 Notice that the 'users' portion of the API URL is the last part of the API URL
 and it requires the username.  Thus, this argument is provided as an 'argument'

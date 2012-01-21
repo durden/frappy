@@ -220,6 +220,7 @@ class APICall(object):
 
         if "json" == self.req_format:
             self.response = json.loads(resp.content.decode('utf8'))
+            self.response_json = json.dumps(self.response)
         else:
             self.response = resp.content.decode('utf8')
 
