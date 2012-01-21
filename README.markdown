@@ -14,6 +14,39 @@ easy to extend to other web APIs.
 * Github
 * Forrst
 
+###Add support for new service
+Just subclass core.api.APICall class and place in services module.  See
+existing services for examples.
+
+###How do I use it?
+Each service has a minimal set of doctests which show a few examples.  In
+general, frappy should make it fairly obvious (hopefully) how to call an API
+method in code.
+
+Typically the '/' in an API call translate into different 'attributes' in
+Python code.  Then, the final portion of the API URL is the actual method call.
+For example, the following github API call:
+    https://api.github.com/users/
+
+Translates to a Python call like so:
+    >>> from frappy.services.github import Github
+    >>> g = Github()
+    >>> r = g.users('octocat')
+
+Notice that the 'users' portion of the API URL is the last part of the API URL
+and it requires the username.  Thus, this argument is provided as an 'argument'
+to the 'users' method.
+
+You can also make basic authenticated calls by creating an authentication objet
+and setting up your service object with it.
+
+    >>> from frappy.services.github import Github
+    >>> from frappy.core.auth import UserPassAuth
+    >>> auth = UserPassAuth('joe', 'password')
+    >>> g = Github(auth=auth)
+    >>> x = g.gists(description='testing', public='true',
+                files={'test.txt': {'content': 'This is a test from frappy'}})
+
 ###Contribution Guidelines
 
 * All code should be PEP8 compliant.
