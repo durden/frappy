@@ -33,6 +33,7 @@ Translates to a Python call like so:
     >>> from frappy.services.github import Github
     >>> g = Github()
     >>> r = g.users('octocat')
+    >>> print r.repsonse
 
 Notice that the 'users' portion of the API URL is the last part of the API URL
 and it requires the username.  Thus, this argument is provided as an 'argument'
