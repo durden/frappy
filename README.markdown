@@ -40,7 +40,7 @@ Notice that the 'users' portion of the API URL is the last part of the API URL
 and it requires the username.  Thus, this argument is provided as an 'argument'
 to the 'users' method.
 
-You can also make basic authenticated calls by creating an authentication objet
+You can also make basic authenticated calls by creating an authentication object
 and setting up your service object with it.
 
     >>> from frappy.services.github import Github
