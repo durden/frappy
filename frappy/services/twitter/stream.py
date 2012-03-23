@@ -25,12 +25,12 @@ class TwitterJSONIter(object):
                 utf8_buf = self.buf.decode('utf8').lstrip()
                 res, ptr = self.decoder.raw_decode(utf8_buf)
                 self.buf = utf8_buf[ptr:].encode('utf8')
-                yield self.buf
+                yield json.loads(utf8_buf)
             except ValueError as e:
                 continue
             except urllib2.HTTPError as err:
-                raise APIHTTPError(err.getcode(), self.req.get_full_url(),
-                                   self.arg_data)
+                raise APIHTTPError(self.req.status_code,
+                                   self.req.get_full_url())
 
 
 class TwitterStream(Twitter):
@@ -49,7 +49,7 @@ class TwitterStream(Twitter):
     The iterator will yield tweets forever and ever (until the stream
     breaks at which point it raises a TwitterHTTPError.)
     """
-    def __init__(self, domain="stream.twitter.com", secure=False, auth=None):
+    def __init__(self, domain="stream.twitter.com", secure=True, auth=None):
         Twitter.__init__(self, auth=auth, req_format="json", domain=domain,
                          secure=secure, api_version='1')
 
