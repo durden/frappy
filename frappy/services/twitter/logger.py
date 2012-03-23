@@ -25,13 +25,12 @@ DESCRIPTION:
 from __future__ import print_function
 
 import sys
-import os
 from time import sleep
 
-from .api import Twitter, TwitterError
-from .cmdline import CONSUMER_KEY, CONSUMER_SECRET
-from .auth import NoAuth
-from .util import printNicely
+from frappy.core.api import APIHTTPError
+from frappy.services.twitter.twitter import Twitter
+from frappy.core.auth import NoAuth
+from frappy.core.util import printNicely
 
 
 def log_debug(msg):
@@ -89,9 +88,13 @@ def main(args=sys.argv[1:]):
             if tweets_processed == 0:
                 log_debug("That's it, we got all the tweets. Done.")
                 break
-        except TwitterError as e:
+        except APIHTTPError as e:
             log_debug("Twitter bailed out. I'm going to sleep a bit then "
                       + "try again")
             sleep(3)
 
     return 0
+
+
+if __name__ == "__main__":
+    main()

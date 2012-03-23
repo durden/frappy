@@ -69,7 +69,6 @@ CONSUMER_SECRET = 'MEYTOS97VvlHX7K1rwHPEqVpTSqZ71HtvoK4sVuYk'
 import sys
 import time
 from getopt import gnu_getopt as getopt, GetoptError
-from getpass import getpass
 import re
 import os.path
 
@@ -82,7 +81,6 @@ try:
     from urllib.parse import quote
 except ImportError:
     from urllib2 import quote
-import webbrowser
 
 from .twitter import Twitter
 from .oauth_dance import oauth_dance

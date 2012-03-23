@@ -84,7 +84,7 @@ class TwitterStream(Twitter):
             req = urllib2.Request(self.uri, arg_data, self.headers['request'])
             return urllib2.urlopen(req)
         except (urllib2.HTTPError, urllib2.URLError), err:
-            raise APIHTTPError(err.getcode(), req.get_full_url(), arg_data)
+            raise APIHTTPError(req.status_code, req.get_full_url())
 
     def _handle_response(self, resp, arg_data):
         return iter(TwitterJSONIter(resp, arg_data))

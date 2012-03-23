@@ -12,9 +12,9 @@ from __future__ import print_function
 
 import sys
 
-from .stream import TwitterStream
-from .auth import UserPassAuth
-from .util import printNicely
+from stream import TwitterStream
+from frappy.core.auth import UserPassAuth
+from frappy.core.util import printNicely
 
 
 def main(args=sys.argv[1:]):
@@ -32,3 +32,7 @@ def main(args=sys.argv[1:]):
         # or data message.
         if tweet.get('text'):
             printNicely(tweet['text'])
+
+
+if __name__ == "__main__":
+    main()
