@@ -107,7 +107,6 @@ class OAuth(Auth):
         return enc_params + "&" + "oauth_signature=" + \
                 urllib_parse.quote(signature, '')
 
-
     @staticmethod
     def write_token_file(filename, oauth_token, oauth_token_secret):
         """
@@ -118,7 +117,6 @@ class OAuth(Auth):
         print(oauth_token, file=oauth_file)
         print(oauth_token_secret, file=oauth_file)
         oauth_file.close()
-
 
     @staticmethod
     def read_token_file(filename):

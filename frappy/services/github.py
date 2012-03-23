@@ -10,7 +10,6 @@ except ImportError:
 from frappy.core.api import APICall
 
 
-
 class Github(APICall):
     """
     Tiny wrapper around Github API (pass method=<method>) to any call to alter

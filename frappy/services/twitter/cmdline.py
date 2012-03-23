@@ -474,12 +474,14 @@ class MyListsAction(ListsAction):
 
 class FriendsAction(StatusAction):
     def getStatuses(self, twitter, options):
-        return reversed(twitter.statuses.friends_timeline(count=options["length"]))
+        return reversed(twitter.statuses.friends_timeline(
+                                                    count=options["length"]))
 
 
 class PublicAction(StatusAction):
     def getStatuses(self, twitter, options):
-        return reversed(twitter.statuses.public_timeline(count=options["length"]))
+        return reversed(twitter.statuses.public_timeline(
+                                                    count=options["length"]))
 
 
 class RepliesAction(StatusAction):
