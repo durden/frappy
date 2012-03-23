@@ -376,7 +376,7 @@ class Action(object):
     def __call__(self, twitter, options):
         action = actions.get(options['action'], NoSuchAction)()
         try:
-            doAction = lambda : action(twitter, options)
+            doAction = lambda: action(twitter, options)
             if (options['refresh'] and isinstance(action, StatusAction)):
                 while True:
                     doAction()
@@ -431,13 +431,13 @@ class SearchAction(Action):
 class AdminAction(Action):
     def __call__(self, twitter, options):
         if not (options['extra_args'] and options['extra_args'][0]):
-            raise APIError("You need to specify a user (screen name)")
+            raise APIHTTPError("You need to specify a user (screen name)")
         af = get_formatter('admin', options)
         try:
             user = self.getUser(twitter, options['extra_args'][0])
-        except APIError as e:
-            print("There was a problem following or leaving the specified user.")
-            print("You may be trying to follow a user you are already following;")
+        except APIHTTPError as e:
+            print("There was a problem following or leaving specified user.")
+            print("You may be trying to follow a user your already following;")
             print("Leaving a user you are not currently following;")
             print("Or the user may not exist.")
             print("Sorry.")

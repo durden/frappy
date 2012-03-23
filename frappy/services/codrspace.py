@@ -9,7 +9,7 @@ from frappy.core.api import APICall
 class Codrspace(APICall):
     """
     Tiny wrapper around Codrspace API
-    
+
     Examples:
 
     Get user's posts
@@ -23,7 +23,7 @@ class Codrspace(APICall):
     >>> # Loop over posts
     ... for p in posts.response['objects']:
     ...    pass
-    ... 
+    ...
 
     """
 

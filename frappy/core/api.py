@@ -12,7 +12,6 @@ except ImportError:
     import simplejson as json
 
 
-
 class APIHTTPError(Exception):
     """
     Base Exception thrown by the APICall object when there is a

@@ -35,6 +35,7 @@ class Auth(object):
 
         return {}
 
+
 class UserPassAuth(Auth):
     """
     Basic auth authentication using email/username and
