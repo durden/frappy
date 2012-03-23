@@ -87,7 +87,7 @@ import webbrowser
 from .twitter import Twitter
 from .oauth_dance import oauth_dance
 
-from frappy.core.api import APIError
+from frappy.core.api import APIHTTPError
 from frappy.core.auth import OAuth
 from frappy.core import ansi
 from frappy.core.util import smrt_input, printNicely
@@ -332,12 +332,12 @@ formatters['lists'] = lists_formatters
 def get_formatter(action_type, options):
     formatters_dict = formatters.get(action_type)
     if (not formatters_dict):
-        raise APIError(
+        raise APIHTTPError(
             "There was an error finding class of formatters for your type (%s)"
             % (action_type))
     f = formatters_dict.get(options['format'])
     if (not f):
-        raise APIError(
+        raise APIHTTPError(
             "Unknown formatter '%s' for status actions" % (options['format']))
     return f()
 
@@ -450,7 +450,7 @@ class AdminAction(Action):
 class ListsAction(StatusAction):
     def getStatuses(self, twitter, options):
         if not options['extra_args']:
-            raise APIError("Please provide a user to query for lists")
+            raise APIHTTPError("Please provide a user to query for lists")
 
         screen_name = options['extra_args'][0]
 
@@ -654,7 +654,7 @@ def main(args=sys.argv[1:]):
     except NoSuchActionError as e:
         print(e, file=sys.stderr)
         raise SystemExit(1)
-    except APIError as e:
+    except APIHTTPError as e:
         print(str(e), file=sys.stderr)
         print("Use 'twitter -h' for help.", file=sys.stderr)
         raise SystemExit(1)
