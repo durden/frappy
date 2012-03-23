@@ -44,7 +44,8 @@ def get_tweets(twitter, screen_name, max_id=None):
 
     n_tweets = 0
     tweets = twitter.statuses.user_timeline(**kwargs)
-    for tweet in tweets:
+
+    for tweet in tweets.response:
         if tweet['id'] == max_id:
             continue
         print("%s %s\nDate: %s" % (tweet['user']['screen_name'],
