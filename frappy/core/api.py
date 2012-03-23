@@ -25,7 +25,7 @@ class APIHTTPError(Exception):
         self.status_code = status_code
         self.uri = uri
 
-        APIError.__init__(self)
+        super(Exception, self).__init__()
 
     def __str__(self):
         """Stringify error"""
