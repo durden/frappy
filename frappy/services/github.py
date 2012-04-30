@@ -61,7 +61,7 @@ class Github(APICall):
     u'Frappy supports Github! (use with caution..)'
     >>> x = g.repos.durden.frappy.commits(page=2,per_page=2)
     >>> x.requested_uri
-    'https://api.github.com/repos/durden/frappy/commits?per_page=2&page=2'
+    u'https://api.github.com/repos/durden/frappy/commits?per_page=2&page=2'
     """
 
     def __init__(self, req_format="json", domain="api.github.com",
