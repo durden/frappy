@@ -60,4 +60,5 @@ and setting up your service object with it.
 ###Requirements
 
 [Python Requests](https://github.com/kennethreitz/requests)
-(See requirements file)
+
+[https://github.com/durden/frappy/blob/master/requirements.txt](See requirements file)
