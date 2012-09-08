@@ -1,4 +1,7 @@
 #Frappy
+
+[![Build Status](https://secure.travis-ci.org/durden/frappy.png)](http://travis-ci.org/durden/frappy?branch=master)
+
 Frappy is a framework for interacting with social web APIs.  It is meant to be
 an easy/quick way to create small Python wrappers for web APIs.
 
@@ -60,4 +63,5 @@ and setting up your service object with it.
 ###Requirements
 
 [Python Requests](https://github.com/kennethreitz/requests)
-(See requirements file)
+
+[https://github.com/durden/frappy/blob/master/requirements.txt](See requirements file)
