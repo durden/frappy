@@ -10,10 +10,10 @@ easy to extend to other web APIs.
 
 ##Supported APIs
 
-* [Twitter]('http://twitter.com')
-* [Github]('http://github.com')
-* [Forrst]('http://forrst.com')
-* [Codrspace]('http://codrspace.com')
+* [Twitter](http://twitter.com)
+* [Github](http://github.com)
+* [Forrst](http://forrst.com)
+* [Codrspace](http://codrspace.com)
 
 ###Add support for new service
 Just subclass core.api.APICall class and place in services module.  See
